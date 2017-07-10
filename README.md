@@ -1,6 +1,6 @@
 # wp-rest-api-for-app
 
-## 为微信小程序、app提供定制WordPres rest api
+## 为微信小程序、app提供定制WordPress rest api
 
 程序开发流程及注意事项见：
 
