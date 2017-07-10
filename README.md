@@ -8,4 +8,4 @@ https://www.watch-life.net/wordpress/weixin-connect-wordpress.html
 
 技术支持网站：https://www.watch-life.net
 
-开源协议：GPL
+开源协议：GPL v3

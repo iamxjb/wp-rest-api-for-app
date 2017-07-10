@@ -6,7 +6,7 @@ Description: 为微信小程序、app提供定制WordPres rest api
 Version: 0.1
 Author: jianbo
 Author URI: http://www.watch-life.net
-License: GPL
+License: GPL v3
 */
 
 
