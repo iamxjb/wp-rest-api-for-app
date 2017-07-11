@@ -126,7 +126,7 @@ function get_post_content_first_image($post_content){
 	preg_match_all( '/class=[\'"].*?wp-image-([\d]*)[\'"]/i', $post_content, $matches );
 	if( $matches && isset($matches[1]) && isset($matches[1][0]) ){	
 		$image_id = $matches[1][0];
-		if($image_url = wpjam_get_post_image_url($image_id, $size)){
+		if($image_url = get_post_image_url($image_id, $size)){
 			return $image_url;
 		}
 	}
@@ -135,6 +135,13 @@ function get_post_content_first_image($post_content){
 	if( $matches && isset($matches[1]) && isset($matches[1][0]) ){	   
 		return $matches[1][0];
 	}
+}
+
+function get_post_image_url($image_id, $size='full'){
+	if($thumb = wp_get_attachment_image_src($image_id, $size)){
+		return $thumb[0];
+	}
+	return false;	
 }
 
 add_filter('rest_allow_anonymous_comments','set_rest_allow_anonymous_comments');
