@@ -2,7 +2,7 @@
 /*
 Plugin Name: WP REST API For App
 Plugin URI: http://www.watch-life.net
-Description: 为微信小程序、app提供定制WordPress rest api
+Description: 为微信小程序、app提供定制WordPress rest api(本插件部分功能依赖插件WPJAM-Basic，为了完整使用本插件，请安装<a href="http://blog.wpjam.com/project/wpjam-basic/">WPJAM-Basic</a>插件。)
 Version: 0.1
 Author: jianbo
 Author URI: http://www.watch-life.net
