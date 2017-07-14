@@ -3,7 +3,7 @@
 Plugin Name: WP REST API For App
 Plugin URI: http://www.watch-life.net
 Description: 为微信小程序、app提供定制WordPress rest api(本插件部分功能依赖插件WPJAM-Basic，为了完整使用本插件，请安装<a href="http://blog.wpjam.com/project/wpjam-basic/">WPJAM-Basic</a>插件。)
-Version: 0.1
+Version: 0.5
 Author: jianbo
 Author URI: http://www.watch-life.net
 License: GPL v3
@@ -100,19 +100,20 @@ function custom_fields_rest_prepare_post( $data, $post, $request, $post_id) {
  
 }
 
-function custom_fields_rest_prepare_category( $data, $item, $request ) {
-	
-    $term_meta=get_term_meta($item->term_id,'thumbnail');
-    if($term_meta)
+function custom_fields_rest_prepare_category( $data, $item, $request ) {	  
+    $category_thumbnail_image='';
+    $temp='';
+    if($temp=get_term_meta($item->term_id,'thumbnail',true))
     {
-     $category_thumbnail_image=$term_meta[0];
+        $category_thumbnail_image=$temp;
+      
     }
-    else
+    elseif($temp=get_term_meta($item->term_id,'catcover',true));
     {
-     $category_thumbnail_image ='';
+        $category_thumbnail_image=$temp;
     }
-	$data->data['category_thumbnail_image'] =$category_thumbnail_image;
     
+	$data->data['category_thumbnail_image'] =$category_thumbnail_image;    
 	return $data;
 }
 
@@ -144,8 +145,58 @@ function get_post_image_url($image_id, $size='full'){
 	return false;	
 }
 
-add_filter('rest_allow_anonymous_comments','set_rest_allow_anonymous_comments');
-add_filter( 'rest_prepare_category', 'custom_fields_rest_prepare_category', 10, 3 );
-add_filter( 'rest_prepare_post', 'custom_fields_rest_prepare_post', 10, 3 );
+add_filter('rest_allow_anonymous_comments','set_rest_allow_anonymous_comments'); //允许匿名评论
+add_filter( 'rest_prepare_category', 'custom_fields_rest_prepare_category', 10, 3 ); //获取分类的封面图片
+add_filter( 'rest_prepare_post', 'custom_fields_rest_prepare_post', 10, 3 ); //获取文章的缩略图，评论数目，分类名称
+
+
+/*********   给分类添加微信小程序封面 *********/
+
+add_action( 'category_add_form_fields', 'weixin_new_term_catcover_field' );
+function weixin_new_term_catcover_field() {
+    wp_nonce_field( basename( __FILE__ ), 'weixin_app_term_catcover_nonce' ); ?>
+
+    <div class="form-field weixin-app-term-catcover-wrap">
+        <label for="weixin-app-term-catcover">微信小程序封面</label>
+        <input type="url" name="weixin_app_term_catcover" id="weixin-app-term-catcover"  class="type-image regular-text" data-default-catcover="" />
+    </div>
+<?php }
+add_action( 'category_edit_form_fields', 'weixin_edit_term_catcover_field' );
+function weixin_edit_term_catcover_field( $term ) {
+    $default = '';
+    $catcover   = get_term_meta( $term->term_id, 'catcover', true );
+
+    if ( ! $catcover )
+        $catcover = $default; ?>
+
+    <tr class="form-field weixin-app-term-catcover-wrap">
+        <th scope="row"><label for="weixin-app-term-catcover">微信小程序封面</label></th>
+        <td>
+            <?php echo wp_nonce_field( basename( __FILE__ ), 'weixin_app_term_catcover_nonce' ); ?>
+            <input type="url" name="weixin_app_term_catcover" id="weixin-app-term-catcover" class="type-image regular-text" value="<?php echo esc_attr( $catcover ); ?>" data-default-catcover="<?php echo esc_attr( $default ); ?>" />
+        </td>
+    </tr>
+<?php }
+
+add_action( 'create_category', 'weixin_app_save_term_catcover' );
+add_action( 'edit_category',   'weixin_app_save_term_catcover' );
+
+function weixin_app_save_term_catcover( $term_id ) {
+    if ( ! isset( $_POST['weixin_app_term_catcover_nonce'] ) || ! wp_verify_nonce( $_POST['weixin_app_term_catcover_nonce'], basename( __FILE__ ) ) )
+        return;
+
+    $catcover = isset( $_POST['weixin_app_term_catcover'] ) ? $_POST['weixin_app_term_catcover'] : '';
+
+    if ( '' === $catcover ) {
+        delete_term_meta( $term_id, 'catcover' );
+    } else {
+        update_term_meta( $term_id, 'catcover', $catcover );
+    }
+}
+
+/*********  *********/
+
+
+
 
 ?>
