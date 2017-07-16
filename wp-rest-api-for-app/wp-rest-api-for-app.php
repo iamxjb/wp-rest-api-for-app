@@ -2,8 +2,8 @@
 /*
 Plugin Name: WP REST API For App
 Plugin URI: http://www.watch-life.net
-Description: 为微信小程序、app提供定制WordPress rest api
-Version: 0.5
+Description: 为微信小程序、app提供定制WordPress rest api(本插件部分功能依赖插件WPJAM-Basic，为了完整使用本插件，请安装<a href="http://blog.wpjam.com/project/wpjam-basic/">WPJAM-Basic</a>插件。)
+Version: 0.1
 Author: jianbo
 Author URI: http://www.watch-life.net
 License: GPL v3
@@ -14,9 +14,10 @@ function set_rest_allow_anonymous_comments() {
     return true;
 }
 
-function custom_fields_rest_prepare_post( $data, $post, $request, $post_id) { 
+function custom_fields_rest_prepare_post( $data, $post, $request) { 
 	$_data = $data->data;	 
-	$post_id = ( null === $post_id ) ? get_the_ID() : $post_id;
+	//$post_id = ( null === $post_id ) ? get_the_ID() : $post_id;
+    $post_id =$post->ID;
     
     $content_first_image= get_post_content_first_image(get_the_content());
 	$thumbnail_id = get_post_thumbnail_id($post_id);
@@ -94,6 +95,7 @@ function custom_fields_rest_prepare_post( $data, $post, $request, $post_id) {
     
     //$tin_post_views =  get_post_meta( $post->ID, 'tin_post_views' );
         //$_data[view] = $tin_post_views;
+    
 	$data->data = $_data;
  
 	return $data;
