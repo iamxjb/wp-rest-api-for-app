@@ -2,9 +2,9 @@
 
 ## 为微信小程序、app提供定制WordPress rest api
 
-程序开发流程及注意事项见：
+插件使用及注意事项见：
 
-https://www.watch-life.net/wordpress/weixin-connect-wordpress.html
+https://www.watch-life.net/wechat/wordpress-weixin-2-1-5.html
 
 技术支持网站：https://www.watch-life.net
 
