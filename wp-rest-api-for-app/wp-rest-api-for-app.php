@@ -105,12 +105,12 @@ function custom_fields_rest_prepare_post( $data, $post, $request) {
 function custom_fields_rest_prepare_category( $data, $item, $request ) {	  
     $category_thumbnail_image='';
     $temp='';
-    if($temp=get_term_meta($item->term_id,'thumbnail',true))
+    if($temp=get_term_meta($item->term_id,'catcover',true))
     {
         $category_thumbnail_image=$temp;
       
     }
-    elseif($temp=get_term_meta($item->term_id,'catcover',true));
+    elseif($temp=get_term_meta($item->term_id,'thumbnail',true));
     {
         $category_thumbnail_image=$temp;
     }
