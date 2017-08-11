@@ -19,87 +19,17 @@ function custom_fields_rest_prepare_post( $data, $post, $request) {
 	//$post_id = ( null === $post_id ) ? get_the_ID() : $post_id;
     $post_id =$post->ID;
     
-    $content_first_image= get_post_content_first_image(get_the_content());
-	$thumbnail_id = get_post_thumbnail_id($post_id);
-	if($thumbnail_id ){
-		$thumb = wp_get_attachment_image_src($thumbnail_id, 'thumbnail');
-                $post_thumbnail_image = $thumb[0];
-	}
-    else if($content_first_image)
-    {          
-        $attachments = get_attached_media( 'image', $post_id ); //查找文章的附件
-        $index = array_keys($attachments);
-        $flag=0; 
-        $post_thumbnail_image_150='';
-        $post_medium_image_300='';
-        $post_thumbnail_image_624='';
-        for ($i = 0; $i < sizeof($index); $i++) {
-            $arr =$attachments[$index[$i]];
-            $imageName = $arr->{"post_title"};            
-            if(strpos($content_first_image,$imageName)!==false){  //附件的名称如果和第一张图片相同,就取这个附件的缩略图
-                {
-                    $post_thumbnail_image_150 = wp_get_attachment_image_url($arr->{"ID"},'thumbnail');
-                    $post_medium_image_300=wp_get_attachment_image_url($arr->{"ID"},'medium');
-                    $post_thumbnail_image_624=wp_get_attachment_image_url($arr->{"ID"},'post-thumbnail');
-                    $id =$arr->{"ID"};                    
-                    $flag++;
-                    break;
-                }
-            }
-        }
-        if($flag>0)
-            {
-                $post_thumbnail_image = $post_thumbnail_image_150;
-            }
-            else
-            {
-                $post_thumbnail_image = $content_first_image; 
-            }            
-                        
-	}
-    else
-    {
-        $post_thumbnail_image='';
-    }
-    
-    
-    
-    if(strlen($post_medium_image_300)>0)
-    {
-        $_data['post_medium_image_300']=$post_medium_image_300; 
-    }
-    else
-    {
-         $_data['post_medium_image_300']=$content_first_image;
-    }
-    
-    
-    if(strlen($post_thumbnail_image_624)>0)
-    {
-        $_data['post_thumbnail_image_624']=$post_thumbnail_image_624; 
-    }
-    else
-    {
-         $_data['post_thumbnail_image_624']=$content_first_image;
-    }
-    
-    
-    $_data['post_thumbnail_image']=$post_thumbnail_image; 
-    
-    $_data['content_first_image']=$content_first_image;    
-
+    $images =getPostImages(get_the_content()); 
+    $_data['post_thumbnail_image']=$images['post_thumbnail_image'];
+    $_data['content_first_image']=$images['content_first_image'];
+    $_data['post_medium_image_300']=$images['post_medium_image_300'];
+    $_data['post_thumbnail_image_624']=$images['post_thumbnail_image_624'];
     $comments_count = wp_count_comments( $post_id);
     $_data['total_comments']=$comments_count->total_comments;
     $category =get_the_category($post_id);
-    $_data['category_name'] =$category[0]->cat_name;
-    
-    //$tin_post_views =  get_post_meta( $post->ID, 'tin_post_views' );
-        //$_data[view] = $tin_post_views;
-    
-	$data->data = $_data;
- 
-	return $data;
- 
+    $_data['category_name'] =$category[0]->cat_name; 
+	$data->data = $_data; 
+	return $data; 
 }
 
 function custom_fields_rest_prepare_category( $data, $item, $request ) {	  
@@ -199,6 +129,189 @@ function weixin_app_save_term_catcover( $term_id ) {
 /*********  *********/
 
 
+//获取本站本年度最受欢迎的top10文章
+function getTopHotPostsThisYear( $data ) {
+$data=get_mostcommented_thisyear_json(10); 
+if ( empty( $data ) ) {
+    return new WP_Error( 'no posts', 'no posts', array( 'status' => 404 ) );
+  } 
+// Create the response object
+$response = new WP_REST_Response( $data ); 
+// Add a custom status code
+$response->set_status( 201 ); 
+// Add a custom header
+$response->header( 'Location', 'https://www.watch-life.net' );
+return $response;
+}
+add_action( 'rest_api_init', function () {
+  register_rest_route( 'watch-life-net/v1', '/post/hotpostthisyear', array(
+    'methods' => 'GET',
+    'callback' => 'getTopHotPostsThisYear'    
+  ) );
+} );
 
 
-?>
+// Get Top Commented Posts  this year 获取本年度评论最多的文章
+function get_mostcommented_thisyear_json($limit = 10) {
+    global $wpdb, $post, $tableposts, $tablecomments, $time_difference, $post;
+    $today = date("Y-m-d H:i:s"); //获取今天日期时间   
+    $fristday = date( "Y-m-d H:i:s",  strtotime(date("Y",time())."-1"."-1"));  //本年第一天
+    $sql="SELECT  ".$wpdb->posts.".ID as ID, post_title, post_name,post_content,post_date, COUNT(".$wpdb->comments.".comment_post_ID) AS 'comment_total' FROM ".$wpdb->posts." LEFT JOIN ".$wpdb->comments." ON ".$wpdb->posts.".ID = ".$wpdb->comments.".comment_post_ID WHERE comment_approved = '1' AND post_date BETWEEN '".$fristday."' AND '".$today."' AND post_status = 'publish' AND post_password = '' GROUP BY ".$wpdb->comments.".comment_post_ID ORDER  BY comment_total DESC LIMIT ". $limit;
+    $mostcommenteds = $wpdb->get_results($sql);
+    $posts =[];      
+    foreach ($mostcommenteds as $post) {
+    
+			$post_id = (int) $post->ID;
+			$post_title = stripslashes($post->post_title);
+			$comment_total = (int) $post->comment_total;
+            $post_date =$post->post_date;
+            $post_permalink = get_permalink($post->ID);            
+            $_data["post_id"]  =$post_id;
+            $_data["post_title"] =$post_title; 
+            $_data["comment_total"] =$comment_total;  
+            $_data["post_date"] =$post_date; 
+            $_data["post_permalink"] =$post_permalink;
+
+            $images =getPostImages($post->post_content);         
+            
+            $_data['post_thumbnail_image']=$images['post_thumbnail_image'];
+            $_data['content_first_image']=$images['content_first_image'];
+            $_data['post_medium_image_300']=$images['post_medium_image_300'];
+            $_data['post_thumbnail_image_624']=$images['post_thumbnail_image_624'];
+            $posts[] = $_data;
+            
+            
+    } 
+ return $posts;     
+    
+}
+
+add_action( 'rest_api_init', function () {
+  register_rest_route( 'watch-life-net/v1', '/post/hotpost', array(
+    'methods' => 'GET',
+    'callback' => 'getTopHotPosts'
+  ) );
+} );
+
+
+//获取本站最受欢迎的top10文章
+function getTopHotPosts($data ) {
+$data=get_mostcommented_json(10); 
+if ( empty( $data ) ) {
+    return new WP_Error( 'no posts', 'no posts', array( 'status' => 404 ) );
+  }  
+// Create the response object
+$response = new WP_REST_Response($data); 
+// Add a custom status code
+$response->set_status( 201 ); 
+// Add a custom header
+$response->header( 'Location', 'https://www.watch-life.net' );
+return $response;
+}
+
+
+function get_mostcommented_json($limit = 10) {
+    global $wpdb, $post, $tableposts, $tablecomments, $time_difference, $post;
+    $sql="SELECT  ".$wpdb->posts.".ID as ID, post_title, post_name, post_content,post_date, COUNT(".$wpdb->comments.".comment_post_ID) AS 'comment_total' FROM ".$wpdb->posts." LEFT JOIN ".$wpdb->comments." ON ".$wpdb->posts.".ID = ".$wpdb->comments.".comment_post_ID WHERE comment_approved = '1' AND post_date < '".date("Y-m-d H:i:s", (time() + ($time_difference * 3600)))."' AND post_status = 'publish' AND post_password = '' GROUP BY ".$wpdb->comments.".comment_post_ID ORDER  BY comment_total DESC LIMIT ". $limit;
+    $mostcommenteds = $wpdb->get_results($sql);
+    $posts =[];   
+    foreach ($mostcommenteds as $post) {
+			$post_id = (int) $post->ID;
+			$post_title = stripslashes($post->post_title);
+            $comment_total = (int) $post->comment_total;
+			$post_date =$post->post_date;
+            $post_permalink = get_permalink($post->ID);            
+            $_data["post_id"]  =$post_id;
+            $_data["post_title"] =$post_title; 
+            $_data["comment_total"] =$comment_total;  
+            $_data["post_date"] =$post_date;
+            $_data["post_permalink"] =$post_permalink;
+            
+            $images =getPostImages($post->post_content);         
+            
+            $_data['post_thumbnail_image']=$images['post_thumbnail_image'];
+            $_data['content_first_image']=$images['content_first_image'];
+            $_data['post_medium_image_300']=$images['post_medium_image_300'];
+            $_data['post_thumbnail_image_624']=$images['post_thumbnail_image_624'];          
+                        
+            $posts[] = $_data;    
+            
+    }
+
+return $posts;    
+    
+}
+
+function getPostImages($post_content){
+     $content_first_image= get_post_content_first_image($post_content);           
+           $_data =[];
+            $thumbnail_id = get_post_thumbnail_id($post_id);
+            if($thumbnail_id ){
+                $thumb = wp_get_attachment_image_src($thumbnail_id, 'thumbnail');
+                        $post_thumbnail_image = $thumb[0];
+            }
+            else if($content_first_image)
+            {          
+                $attachments = get_attached_media( 'image', $post_id ); //查找文章的附件
+                $index = array_keys($attachments);
+                $flag=0; 
+                $post_thumbnail_image_150='';
+                $post_medium_image_300='';
+                $post_thumbnail_image_624='';
+                for ($i = 0; $i < sizeof($index); $i++) {
+                    $arr =$attachments[$index[$i]];
+                    $imageName = $arr->{"post_title"};            
+                    if(strpos($content_first_image,$imageName)!==false){  //附件的名称如果和第一张图片相同,就取这个附件的缩略图
+                        {
+                            $post_thumbnail_image_150 = wp_get_attachment_image_url($arr->{"ID"},'thumbnail');
+                            $post_medium_image_300=wp_get_attachment_image_url($arr->{"ID"},'medium');
+                            $post_thumbnail_image_624=wp_get_attachment_image_url($arr->{"ID"},'post-thumbnail');
+                            $id =$arr->{"ID"};                    
+                            $flag++;
+                            break;
+                        }
+                    }
+                }
+                if($flag>0)
+                    {
+                        $post_thumbnail_image = $post_thumbnail_image_150;
+                    }
+                    else
+                    {
+                        $post_thumbnail_image = $content_first_image; 
+                    }          
+            }
+            else
+            {
+                $post_thumbnail_image='';
+            }   
+            
+            if(strlen($post_medium_image_300)>0)
+            {
+                $_data['post_medium_image_300']=$post_medium_image_300; 
+            }
+            else
+            {
+                 $_data['post_medium_image_300']=$content_first_image;
+            }  
+            if(strlen($post_thumbnail_image_624)>0)
+            {
+                $_data['post_thumbnail_image_624']=$post_thumbnail_image_624; 
+            }
+            else
+            {
+                 $_data['post_thumbnail_image_624']=$content_first_image;
+            }            
+            $_data['post_thumbnail_image']=$post_thumbnail_image;
+            $_data['content_first_image']=$content_first_image; 
+            return  $_data;             
+           ////////////////////
+}
+
+
+
+
+
+
+
+
