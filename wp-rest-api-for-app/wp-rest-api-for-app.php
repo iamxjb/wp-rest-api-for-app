@@ -133,7 +133,7 @@ function weixin_app_save_term_catcover( $term_id ) {
 function getTopHotPostsThisYear( $data ) {
 $data=get_mostcommented_thisyear_json(10); 
 if ( empty( $data ) ) {
-    return new WP_Error( 'no posts', 'no posts', array( 'status' => 404 ) );
+    return new WP_Error( 'noposts', 'noposts', array( 'status' => 404 ) );
   } 
 // Create the response object
 $response = new WP_REST_Response( $data ); 
@@ -198,7 +198,7 @@ add_action( 'rest_api_init', function () {
 function getTopHotPosts($data ) {
 $data=get_mostcommented_json(10); 
 if ( empty( $data ) ) {
-    return new WP_Error( 'no posts', 'no posts', array( 'status' => 404 ) );
+    return new WP_Error( 'noposts', 'noposts', array( 'status' => 404 ) );
   }  
 // Create the response object
 $response = new WP_REST_Response($data); 
