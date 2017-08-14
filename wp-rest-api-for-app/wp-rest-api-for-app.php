@@ -9,11 +9,12 @@ Author URI: http://www.watch-life.net
 License: GPL v3
 */
 
-
+//启用匿名评论
 function set_rest_allow_anonymous_comments() {
     return true;
 }
 
+//在rest api 增加显示字段
 function custom_fields_rest_prepare_post( $data, $post, $request) { 
 	$_data = $data->data;	 
 	//$post_id = ( null === $post_id ) ? get_the_ID() : $post_id;
@@ -49,7 +50,7 @@ function custom_fields_rest_prepare_category( $data, $item, $request ) {
 	return $data;
 }
 
-
+//获取文章的第一张图片
 function get_post_content_first_image($post_content){
 	if(!$post_content){
 		$the_post		= get_post();
@@ -70,6 +71,7 @@ function get_post_content_first_image($post_content){
 	}
 }
 
+//获取文章图片的地址
 function get_post_image_url($image_id, $size='full'){
 	if($thumb = wp_get_attachment_image_src($image_id, $size)){
 		return $thumb[0];
@@ -158,7 +160,7 @@ function get_mostcommented_thisyear_json($limit = 10) {
     $fristday = date( "Y-m-d H:i:s",  strtotime(date("Y",time())."-1"."-1"));  //本年第一天
     $sql="SELECT  ".$wpdb->posts.".ID as ID, post_title, post_name,post_content,post_date, COUNT(".$wpdb->comments.".comment_post_ID) AS 'comment_total' FROM ".$wpdb->posts." LEFT JOIN ".$wpdb->comments." ON ".$wpdb->posts.".ID = ".$wpdb->comments.".comment_post_ID WHERE comment_approved = '1' AND post_date BETWEEN '".$fristday."' AND '".$today."' AND post_status = 'publish' AND post_password = '' GROUP BY ".$wpdb->comments.".comment_post_ID ORDER  BY comment_total DESC LIMIT ". $limit;
     $mostcommenteds = $wpdb->get_results($sql);
-    $posts =[];      
+    $posts =array();
     foreach ($mostcommenteds as $post) {
     
 			$post_id = (int) $post->ID;
@@ -214,7 +216,7 @@ function get_mostcommented_json($limit = 10) {
     global $wpdb, $post, $tableposts, $tablecomments, $time_difference, $post;
     $sql="SELECT  ".$wpdb->posts.".ID as ID, post_title, post_name, post_content,post_date, COUNT(".$wpdb->comments.".comment_post_ID) AS 'comment_total' FROM ".$wpdb->posts." LEFT JOIN ".$wpdb->comments." ON ".$wpdb->posts.".ID = ".$wpdb->comments.".comment_post_ID WHERE comment_approved = '1' AND post_date < '".date("Y-m-d H:i:s", (time() + ($time_difference * 3600)))."' AND post_status = 'publish' AND post_password = '' GROUP BY ".$wpdb->comments.".comment_post_ID ORDER  BY comment_total DESC LIMIT ". $limit;
     $mostcommenteds = $wpdb->get_results($sql);
-    $posts =[];   
+    $posts =array();  
     foreach ($mostcommenteds as $post) {
 			$post_id = (int) $post->ID;
 			$post_title = stripslashes($post->post_title);
@@ -244,7 +246,7 @@ return $posts;
 
 function getPostImages($post_content){
      $content_first_image= get_post_content_first_image($post_content);           
-           $_data =[];
+           $_data =array();
             $thumbnail_id = get_post_thumbnail_id($post_id);
             if($thumbnail_id ){
                 $thumb = wp_get_attachment_image_src($thumbnail_id, 'thumbnail');
