@@ -33,11 +33,7 @@ function custom_fields_rest_prepare_post( $data, $post, $request) {
     $_data['total_comments']=$comments_count->total_comments;
     $category =get_the_category($post_id);
     $_data['category_name'] =$category[0]->cat_name; 
-    $content  =get_the_content();
-    $content=str_replace( 'www.watch-life.net', 'wf.woaixcx.com', $content); 
-    $_content['rendered'] =$content;
-    $_data['content']= $_content;  
-    //$unset( $_data['content'] );
+    
     
     $data->data = $_data; 
     
