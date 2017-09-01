@@ -16,8 +16,8 @@ function set_rest_allow_anonymous_comments() {
 
 //在rest api 增加显示字段
 function custom_fields_rest_prepare_post( $data, $post, $request) { 
-	$_data = $data->data;	 
-	//$post_id = ( null === $post_id ) ? get_the_ID() : $post_id;
+    $_data = $data->data;    
+    //$post_id = ( null === $post_id ) ? get_the_ID() : $post_id;
     $post_id =$post->ID;
     
     $images =getPostImages(get_the_content()); 
@@ -28,17 +28,23 @@ function custom_fields_rest_prepare_post( $data, $post, $request) {
     $comments_count = wp_count_comments($post_id);
     
     $pageviews = (int) get_post_meta( $post->ID, 'wl_pageviews',true);
-    $_data[pageviews] = $pageviews;
+    $_data['pageviews'] = $pageviews;
     
     $_data['total_comments']=$comments_count->total_comments;
     $category =get_the_category($post_id);
     $_data['category_name'] =$category[0]->cat_name; 
-	$data->data = $_data; 
+    $content  =get_the_content();
+    $content=str_replace( 'www.watch-life.net', 'wf.woaixcx.com', $content); 
+    $_content['rendered'] =$content;
+    $_data['content']= $_content;  
+    //$unset( $_data['content'] );
     
-	return $data; 
+    $data->data = $_data; 
+    
+    return $data; 
 }
 
-function custom_fields_rest_prepare_category( $data, $item, $request ) {	  
+function custom_fields_rest_prepare_category( $data, $item, $request ) {      
     $category_thumbnail_image='';
     $temp='';
     if($temp=get_term_meta($item->term_id,'catcover',true))
@@ -51,37 +57,37 @@ function custom_fields_rest_prepare_category( $data, $item, $request ) {
         $category_thumbnail_image=$temp;
     }
     
-	$data->data['category_thumbnail_image'] =$category_thumbnail_image;    
-	return $data;
+    $data->data['category_thumbnail_image'] =$category_thumbnail_image;    
+    return $data;
 }
 
 //获取文章的第一张图片
 function get_post_content_first_image($post_content){
-	if(!$post_content){
-		$the_post		= get_post();
-		$post_content	= $the_post->post_content;
-	} 
+    if(!$post_content){
+        $the_post       = get_post();
+        $post_content   = $the_post->post_content;
+    } 
 
-	preg_match_all( '/class=[\'"].*?wp-image-([\d]*)[\'"]/i', $post_content, $matches );
-	if( $matches && isset($matches[1]) && isset($matches[1][0]) ){	
-		$image_id = $matches[1][0];
-		if($image_url = get_post_image_url($image_id, $size)){
-			return $image_url;
-		}
-	}
+    preg_match_all( '/class=[\'"].*?wp-image-([\d]*)[\'"]/i', $post_content, $matches );
+    if( $matches && isset($matches[1]) && isset($matches[1][0]) ){  
+        $image_id = $matches[1][0];
+        if($image_url = get_post_image_url($image_id, $size)){
+            return $image_url;
+        }
+    }
 
-	preg_match_all('|<img.*?src=[\'"](.*?)[\'"].*?>|i', do_shortcode($post_content), $matches);
-	if( $matches && isset($matches[1]) && isset($matches[1][0]) ){	   
-		return $matches[1][0];
-	}
+    preg_match_all('|<img.*?src=[\'"](.*?)[\'"].*?>|i', do_shortcode($post_content), $matches);
+    if( $matches && isset($matches[1]) && isset($matches[1][0]) ){     
+        return $matches[1][0];
+    }
 }
 
 //获取文章图片的地址
 function get_post_image_url($image_id, $size='full'){
-	if($thumb = wp_get_attachment_image_src($image_id, $size)){
-		return $thumb[0];
-	}
-	return false;	
+    if($thumb = wp_get_attachment_image_src($image_id, $size)){
+        return $thumb[0];
+    }
+    return false;   
 }
 
 add_filter('rest_allow_anonymous_comments','set_rest_allow_anonymous_comments'); //允许匿名评论
@@ -168,9 +174,9 @@ function get_mostcommented_thisyear_json($limit = 10) {
     $posts =array();
     foreach ($mostcommenteds as $post) {
     
-			$post_id = (int) $post->ID;
-			$post_title = stripslashes($post->post_title);
-			$comment_total = (int) $post->comment_total;
+            $post_id = (int) $post->ID;
+            $post_title = stripslashes($post->post_title);
+            $comment_total = (int) $post->comment_total;
             $post_date =$post->post_date;
             $post_permalink = get_permalink($post->ID);            
             $_data["post_id"]  =$post_id;
@@ -179,7 +185,10 @@ function get_mostcommented_thisyear_json($limit = 10) {
             $_data["post_date"] =$post_date; 
             $_data["post_permalink"] =$post_permalink;
 
-            $images =getPostImages($post->post_content);         
+            $images =getPostImages($post->post_content); 
+
+            $pageviews = (int) get_post_meta($post_id, 'wl_pageviews',true);
+            $_data['pageviews'] = $pageviews;        
             
             $_data['post_thumbnail_image']=$images['post_thumbnail_image'];
             $_data['content_first_image']=$images['content_first_image'];
@@ -223,16 +232,19 @@ function get_mostcommented_json($limit = 10) {
     $mostcommenteds = $wpdb->get_results($sql);
     $posts =array();  
     foreach ($mostcommenteds as $post) {
-			$post_id = (int) $post->ID;
-			$post_title = stripslashes($post->post_title);
+            $post_id = (int) $post->ID;
+            $post_title = stripslashes($post->post_title);
             $comment_total = (int) $post->comment_total;
-			$post_date =$post->post_date;
+            $post_date =$post->post_date;
             $post_permalink = get_permalink($post->ID);            
             $_data["post_id"]  =$post_id;
             $_data["post_title"] =$post_title; 
             $_data["comment_total"] =$comment_total;  
             $_data["post_date"] =$post_date;
             $_data["post_permalink"] =$post_permalink;
+
+            $pageviews = (int) get_post_meta($post_id, 'wl_pageviews',true);
+            $_data['pageviews'] = $pageviews; 
             
             $images =getPostImages($post->post_content);         
             
