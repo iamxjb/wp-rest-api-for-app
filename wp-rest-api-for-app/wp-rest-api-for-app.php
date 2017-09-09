@@ -20,7 +20,7 @@ function custom_fields_rest_prepare_post( $data, $post, $request) {
     //$post_id = ( null === $post_id ) ? get_the_ID() : $post_id;
     $post_id =$post->ID;
     
-    $images =getPostImages(get_the_content()); 
+    $images =getPostImages(get_the_content(),$post_id); 
     $_data['post_thumbnail_image']=$images['post_thumbnail_image'];
     $_data['content_first_image']=$images['content_first_image'];
     $_data['post_medium_image_300']=$images['post_medium_image_300'];
@@ -67,7 +67,7 @@ function get_post_content_first_image($post_content){
     preg_match_all( '/class=[\'"].*?wp-image-([\d]*)[\'"]/i', $post_content, $matches );
     if( $matches && isset($matches[1]) && isset($matches[1][0]) ){  
         $image_id = $matches[1][0];
-        if($image_url = get_post_image_url($image_id, $size)){
+        if($image_url = get_post_image_url($image_id)){
             return $image_url;
         }
     }
@@ -181,7 +181,7 @@ function get_mostcommented_thisyear_json($limit = 10) {
             $_data["post_date"] =$post_date; 
             $_data["post_permalink"] =$post_permalink;
 
-            $images =getPostImages($post->post_content); 
+            $images =getPostImages($post->post_content,$post_id); 
 
             $pageviews = (int) get_post_meta($post_id, 'wl_pageviews',true);
             $_data['pageviews'] = $pageviews;        
@@ -242,7 +242,7 @@ function get_mostcommented_json($limit = 10) {
             $pageviews = (int) get_post_meta($post_id, 'wl_pageviews',true);
             $_data['pageviews'] = $pageviews; 
             
-            $images =getPostImages($post->post_content);         
+            $images =getPostImages($post->post_content,$post_id);         
             
             $_data['post_thumbnail_image']=$images['post_thumbnail_image'];
             $_data['content_first_image']=$images['content_first_image'];
@@ -313,8 +313,12 @@ function post_pageviews_json($post_ID) {
 }
 
 
-function getPostImages($post_content){
-     $content_first_image= get_post_content_first_image($post_content);           
+function getPostImages($post_content,$post_id){
+		$content_first_image= get_post_content_first_image($post_content); 
+		$post_thumbnail_image_150='';
+	    $post_medium_image_300='';
+	    $post_thumbnail_image_624='';
+	    $post_thumbnail_image='';         
            $_data =array();
             $thumbnail_id = get_post_thumbnail_id($post_id);
             if($thumbnail_id ){
@@ -326,9 +330,7 @@ function getPostImages($post_content){
                 $attachments = get_attached_media( 'image', $post_id ); //查找文章的附件
                 $index = array_keys($attachments);
                 $flag=0; 
-                $post_thumbnail_image_150='';
-                $post_medium_image_300='';
-                $post_thumbnail_image_624='';
+                
                 for ($i = 0; $i < sizeof($index); $i++) {
                     $arr =$attachments[$index[$i]];
                     $imageName = $arr->{"post_title"};            
