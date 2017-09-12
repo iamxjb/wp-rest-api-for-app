@@ -219,10 +219,7 @@ function weixinapp_create_menu() {
 function register_weixinappsettings() {
     // 注册设置
     register_setting( 'weixinapp-group', 'wf_appid' );
-    register_setting( 'weixinapp-group', 'wf_secret' );
-    register_setting( 'weixinapp-group', 'wf_mch_id' );
-    register_setting( 'weixinapp-group', 'wf_spbill_create_ip' );
-    register_setting( 'weixinapp-group', 'wf_total_fee' );
+    register_setting( 'weixinapp-group', 'wf_secret' );   
     
     
 }
@@ -243,24 +240,8 @@ function weixinapp_settings_page() {
         <tr valign="top">
         <th scope="row">AppSecret</th>
         <td><input type="text" name="wf_secret" style="width:400px" value="<?php echo esc_attr( get_option('wf_secret') ); ?>" /></td>
-        </tr>
-
-        <tr valign="top">
-        <th scope="row">商户ID</th>
-        <td><input type="text" name="wf_mch_id" style="width:400px" value="<?php echo esc_attr( get_option('wf_mch_id') ); ?>" /></td>
-        </tr>
-
-         
-
-        <tr valign="top">
-        <th scope="row">服务器IP</th>
-        <td><input type="text" name="wf_spbill_create_ip" style="width:400px" value="<?php echo esc_attr( get_option('wf_spbill_create_ip') ); ?>" /></td>
-        </tr>
-
-         <tr valign="top">
-        <th scope="row">支付最小额度(整数)</th>
-        <td><input type="text" name="wf_total_fee" style="width:400px" value="<?php echo esc_attr( get_option('wf_total_fee') ); ?>" /></td>
-        </tr>
+        </tr> 
+       
 
         
         
