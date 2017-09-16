@@ -31,12 +31,12 @@ function custom_fields_rest_prepare_post( $data, $post, $request) {
      
     $like_count = $wpdb->get_var("SELECT COUNT(1) FROM ".$wpdb->postmeta." where meta_value='like' and post_id=".$post_id);
     $_data['like_count']= $like_count;
-    $sql="SELECT meta_key , (SELECT display_name from ".$wpdb->users." WHERE user_login=meta_key) as avatarurl FROM ".$wpdb->postmeta." where meta_value='like' and post_id=".$post_id;
+    $sql="SELECT meta_key , (SELECT display_name from ".$wpdb->users." WHERE user_login=substring(meta_key,2)) as avatarurl FROM ".$wpdb->postmeta." where meta_value='like' and post_id=".$post_id;
     $likes = $wpdb->get_results($sql);
     $avatarurls =array();
     foreach ($likes as $like) {
         $_avatarurl['avatarurl']  =$like->avatarurl;
-        $_avatarurl['openid'] = $like->meta_key;      
+        //$_avatarurl['openid'] = $like->meta_key;      
         $avatarurls[] = $_avatarurl;        
     }
     

@@ -61,110 +61,60 @@ function post_openid_json($js_code,$encryptedData,$iv,$avatarUrl) {
                 if(empty($access_array['errcode']))
                 {
                     $openid = $access_array['openid']; 
-                    if(strpos(get_option('home'),'www.zhaen.com'))
-                    {
+                    $sessionKey = $access_array['session_key'];                    
+                    $pc = new WXBizDataCrypt($appid, $sessionKey);
+                    $errCode = $pc->decryptData($encryptedData, $iv, $data );
+                    if ($errCode == 0) {
                     
-                        $sessionKey = $access_array['session_key'];                    
-                        $pc = new WXBizDataCrypt($appid, $sessionKey);
-                        $errCode = $pc->decryptData($encryptedData, $iv, $data );
-                        if ($errCode == 0) {
-                        
-                            if(!username_exists($openid))
-                            {
-                                $data =json_decode($data,true);
-                                $unionId = $data['unionId'];
+                        if(!username_exists($openid))
+                        {
+                            $data =json_decode($data,true);
+                            $unionId = $data['unionId'];
+                            
+                            $userdata = array(
+                                'user_login'  =>  $openid,
+                                'user_nicename'=> $unionId,
+                                'display_name' => $avatarUrl,
+                                'user_pass'   =>  NULL 
+                            );
+
+                                $user_id = wp_insert_user( $userdata ) ;                    
+                                if (is_wp_error( $user_id ) ) {
                                 
-                                $userdata = array(
-                                    'user_login'  =>  $openid,
-                                    'user_nicename'=> $unionId,
-                                    'display_name' => $avatarUrl,
-                                    'user_pass'   =>  NULL 
-                                );
-
-                                    $user_id = wp_insert_user( $userdata ) ;                    
-                                    if (is_wp_error( $user_id ) ) {
+                                    $result["code"]="success";
+                                    $result["message"]= "insert openid error";
+                                    $result["status"]="500";                   
+                                    return $result;
                                     
-                                        $result["code"]="success";
-                                        $result["message"]= "insert openid error";
-                                        $result["status"]="500";                   
-                                        return $result;
-                                        
-                                    }
-                                    else
-                                    {
-                                        $result["code"]="success";
-                                        $result["message"]= "get  openid success  ";
-                                        $result["status"]="201";
-                                        $result["openid"]=$openid;
-                                        return $result;
-                                    }
-                            
-                            }
-                            else
-                            {
-                                $result["code"]="success";
-                                $result["message"]= "get  openid success  ";
-                                $result["status"]="201";
-                                $result["openid"]=$openid;
-                                return $result;
-                            }
-                            
-                        }
-                        else {
+                                }
+                                else
+                                {
+                                    $result["code"]="success";
+                                    $result["message"]= "get  openid success  ";
+                                    $result["status"]="201";
+                                    $result["openid"]=$openid;
+                                    return $result;
+                                }
                         
+                        }
+                        else
+                        {
                             $result["code"]="success";
-                            $result["message"]=$errCode;
-                            $result["status"]="500";                   
+                            $result["message"]= "get  openid success  ";
+                            $result["status"]="201";
+                            $result["openid"]=$openid;
                             return $result;
-                            
                         }
-                    
-                    }                    
-                    else
-                    {
-                    
-                    
-                         if(!username_exists($openid))
-                            { 
-                                $userdata = array(
-                                    'user_login'  =>  $openid,                                    
-                                    'user_pass'   =>  NULL 
-                                );
-
-                                    $user_id = wp_insert_user( $userdata ) ;                    
-                                    if (is_wp_error( $user_id ) ) {
-                                    
-                                        $result["code"]="success";
-                                        $result["message"]= "insert openid error";
-                                        $result["status"]="500";                   
-                                        return $result;
-                                        
-                                    }
-                                    else
-                                    {
-                                        $result["code"]="success";
-                                        $result["message"]= "get  openid success  ";
-                                        $result["status"]="201";
-                                        $result["openid"]=$openid;
-                                        return $result;
-                                    }
-                            
-                            }
-                            else
-                            {
-                                $result["code"]="success";
-                                $result["message"]= "get  openid success  ";
-                                $result["status"]="201";
-                                $result["openid"]=$openid;
-                                return $result;
-                            }
-                    
-                        
                         
                     }
-                                       
+                    else {
                     
-                    
+                        $result["code"]="success";
+                        $result["message"]=$errCode;
+                        $result["status"]="500";                   
+                        return $result;
+                        
+                    } 
                     
                 }               
                 else
@@ -219,7 +169,9 @@ function weixinapp_create_menu() {
 function register_weixinappsettings() {
     // 注册设置
     register_setting( 'weixinapp-group', 'wf_appid' );
-    register_setting( 'weixinapp-group', 'wf_secret' );   
+    register_setting( 'weixinapp-group', 'wf_secret' );
+    register_setting( 'weixinapp-group', 'wf_mch_id' );    
+    register_setting( 'weixinapp-group', 'wf_notify_url' );    
     
     
 }
@@ -241,9 +193,15 @@ function weixinapp_settings_page() {
         <th scope="row">AppSecret</th>
         <td><input type="text" name="wf_secret" style="width:400px" value="<?php echo esc_attr( get_option('wf_secret') ); ?>" /></td>
         </tr> 
-       
 
-        
+        <tr valign="top">
+        <th scope="row">商户ID</th>
+        <td><input type="text" name="wf_mch_id" style="width:400px" value="<?php echo esc_attr( get_option('wf_mch_id') ); ?>" /></td>
+        </tr> 
+        <tr valign="top">
+        <th scope="row">回调url地址</th>
+        <td><input type="text" name="wf_notify_url" style="width:400px" value="<?php echo esc_attr( get_option('wf_notify_url') ); ?>" /></td>
+        </tr>  
         
     </table>
     <?php submit_button();?>

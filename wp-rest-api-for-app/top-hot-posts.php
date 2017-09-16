@@ -47,6 +47,9 @@ function get_mostcommented_thisyear_json($limit = 10) {
             $pageviews = (int) get_post_meta( $post_id, 'wl_pageviews',true);
             $_data['pageviews'] = $pageviews;
 
+            $like_count = $wpdb->get_var("SELECT COUNT(1) FROM ".$wpdb->postmeta." where meta_value='like' and post_id=".$post_id);
+            $_data['like_count']= $like_count;
+
             $images =getPostImages($post->post_content,$post_id);         
             
             $_data['post_thumbnail_image']=$images['post_thumbnail_image'];
@@ -104,6 +107,10 @@ function get_mostcommented_json($limit = 10) {
             $pageviews = (int) get_post_meta( $post_id, 'wl_pageviews',true);
             $_data['pageviews'] = $pageviews;
             
+            $like_count = $wpdb->get_var("SELECT COUNT(1) FROM ".$wpdb->postmeta." where meta_value='like' and post_id=".$post_id);
+            $_data['like_count']= $like_count;
+
+
             $images =getPostImages($post->post_content,$post_id);         
             
             $_data['post_thumbnail_image']=$images['post_thumbnail_image'];
