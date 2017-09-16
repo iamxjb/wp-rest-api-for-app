@@ -170,8 +170,7 @@ function register_weixinappsettings() {
     // 注册设置
     register_setting( 'weixinapp-group', 'wf_appid' );
     register_setting( 'weixinapp-group', 'wf_secret' );
-    register_setting( 'weixinapp-group', 'wf_mch_id' );    
-    register_setting( 'weixinapp-group', 'wf_notify_url' );    
+       
     
     
 }
@@ -192,17 +191,7 @@ function weixinapp_settings_page() {
         <tr valign="top">
         <th scope="row">AppSecret</th>
         <td><input type="text" name="wf_secret" style="width:400px" value="<?php echo esc_attr( get_option('wf_secret') ); ?>" /></td>
-        </tr> 
-
-        <tr valign="top">
-        <th scope="row">商户ID</th>
-        <td><input type="text" name="wf_mch_id" style="width:400px" value="<?php echo esc_attr( get_option('wf_mch_id') ); ?>" /></td>
-        </tr> 
-        <tr valign="top">
-        <th scope="row">回调url地址</th>
-        <td><input type="text" name="wf_notify_url" style="width:400px" value="<?php echo esc_attr( get_option('wf_notify_url') ); ?>" /></td>
-        </tr>  
-        
+        </tr>         
     </table>
     <?php submit_button();?>
 </form>
