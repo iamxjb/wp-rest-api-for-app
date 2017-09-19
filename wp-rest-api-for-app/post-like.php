@@ -140,7 +140,8 @@ function getIsLike($request) {
 
 function post_islike_json($openid,$postid) {
     $openid="_".$openid; 
-    if (!empty(get_post_meta($postid, $openid,true)))
+    $postmeta = get_post_meta($postid, $openid,true);
+    if (!empty($postmeta))
     {
         
             $result["code"]="success";
