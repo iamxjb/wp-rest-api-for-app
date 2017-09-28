@@ -1,4 +1,4 @@
-# WordpPressP rest api 定制化插件
+# WordpPress rest api 定制化插件
 
 # 为微信小程序、app提供定制WordPress rest api
 
