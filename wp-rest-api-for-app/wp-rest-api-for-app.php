@@ -20,3 +20,4 @@ include(WP_REST_API_FOR_APP_PLUGIN_DIR . 'custom-fields-rest-prepare-post.php');
 include(WP_REST_API_FOR_APP_PLUGIN_DIR . 'post-like.php');    // 点赞
 include(WP_REST_API_FOR_APP_PLUGIN_DIR . 'weixin-praise.php');    //赞赏 
 include(WP_REST_API_FOR_APP_PLUGIN_DIR . 'api.php');    // 公用函数
+include(WP_REST_API_FOR_APP_PLUGIN_DIR . 'weixin-comment.php');    // 微信提交评论
