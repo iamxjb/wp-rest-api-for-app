@@ -99,7 +99,7 @@ function add_comment_json($post,$author_name,$author_email,$author_url,$content,
         if($comment_id)
         {
             $result["code"]="success";
-            $result["message"]= "add comment success 4444";
+            $result["message"]= "add comment success";
             $result["status"]="201";    
             return $result;
         
