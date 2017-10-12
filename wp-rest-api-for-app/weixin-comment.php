@@ -16,16 +16,24 @@ function addcomment($request) {
     $author_name=$request['author_name'];
     $author_email =$request['author_email'];
     $content =$request['content'];
-    $author_url =$request['author_url'];
-    $parent =isset($request['parent'])?((int)$request['parent']):0;
+    $author_url =$request['author_url'];    
     $openid =$request['openid'];
-
-    if ( (int) $parent < 0 ) {
-			$parent =0;
+    $reqparent ='0'; 
+    if(isset($request['parent']))
+    {
+    	$reqparent =$request['parent'];	
+    }
+    $parent =0;
+    if(is_numeric($reqparent))
+	{
+		$parent = (int)$reqparent;
+		if($parent<0)
+		{
+			$parent=0;
 		}
+	}
 
-
-    if($parent !=0)
+	if($parent !=0)
     {
     	$comment = get_comment($parent);
 		if (empty( $comment ) ) {
@@ -33,10 +41,7 @@ function addcomment($request) {
 	        	return new WP_Error( 'error', 'parent id is error', array( 'status' => 500 ) );
 	    	}
 		}
-    }		
-
-	
-
+    }
 
     if(empty($openid) || empty($post)  || empty($author_url)  || empty($author_email)  || empty($content) || empty($author_name))
     {
@@ -89,12 +94,12 @@ function add_comment_json($post,$author_name,$author_email,$author_url,$content,
 		//'user_id' => $current_user->ID, //passing current user ID or any predefined as per the demand
 	);
 
-        $comment_id = wp_new_comment($commentdata);
+        $comment_id = wp_insert_comment( wp_filter_comment($commentdata));
 
         if($comment_id)
         {
             $result["code"]="success";
-            $result["message"]= "add comment success  " .$parent;
+            $result["message"]= "add comment success 4444";
             $result["status"]="201";    
             return $result;
         
