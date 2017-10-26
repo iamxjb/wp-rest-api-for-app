@@ -43,7 +43,7 @@ function postPraise($request) {
                 return new WP_Error( 'error', 'post like error', array( 'status' => 404 ) );
               }
              $response = new WP_REST_Response($data);
-             $response->set_status( 201 ); 
+             $response->set_status( 200 ); 
              return $response;
             
         }
@@ -63,7 +63,7 @@ function post_praise_json($openid,$postid,$orderid,$money){
         {
             $result["code"]="success";
             $result["message"]= "post  praise success  ";
-            $result["status"]="201";    
+            $result["status"]="200";    
             return $result;
         
         }

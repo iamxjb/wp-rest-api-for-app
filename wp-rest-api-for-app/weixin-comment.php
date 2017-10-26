@@ -70,7 +70,7 @@ function addcomment($request) {
                 return new WP_Error( 'error', 'add comment error', array( 'status' => 404 ) );
               }
              $response = new WP_REST_Response($data);
-             $response->set_status( 201 ); 
+             $response->set_status( 200 ); 
              return $response;
             
         }
@@ -100,7 +100,7 @@ function add_comment_json($post,$author_name,$author_email,$author_url,$content,
         {
             $result["code"]="success";
             $result["message"]= "add comment success";
-            $result["status"]="201";    
+            $result["status"]="200";    
             return $result;
         
         }

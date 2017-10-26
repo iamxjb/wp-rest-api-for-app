@@ -26,9 +26,7 @@ function updatepageviews($data) {
         // Create the response object
          $response = new WP_REST_Response($data); 
         // Add a custom status code
-         $response->set_status( 201 ); 
-        // Add a custom header
-        //$response->header( 'Location', 'https://www.watch-life.net' );
+         $response->set_status( 200 );
         return $response;
     
     }
@@ -51,7 +49,7 @@ function post_pageviews_json($post_ID) {
               $result =array();
               $result["code"]="success";
               $result["message"]= "update pageviews success  ";
-              $result["status"]="201";
+              $result["status"]="200";
               return $result;
           }
 }

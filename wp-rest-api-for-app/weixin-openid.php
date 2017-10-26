@@ -30,9 +30,7 @@ function getOpenid($request) {
         // Create the response object
          $response = new WP_REST_Response($data); 
         // Add a custom status code
-         $response->set_status( 201 ); 
-        // Add a custom header
-        //$response->header( 'Location', 'https://www.watch-life.net' );
+         $response->set_status( 200 );        
         return $response;
     
     }    
@@ -91,7 +89,7 @@ function post_openid_json($js_code,$encryptedData,$iv,$avatarUrl) {
                                 {
                                     $result["code"]="success";
                                     $result["message"]= "get  openid success  ";
-                                    $result["status"]="201";
+                                    $result["status"]="200";
                                     $result["openid"]=$openid;
                                     return $result;
                                 }
@@ -101,7 +99,7 @@ function post_openid_json($js_code,$encryptedData,$iv,$avatarUrl) {
                         {
                             $result["code"]="success";
                             $result["message"]= "get  openid success  ";
-                            $result["status"]="201";
+                            $result["status"]="200";
                             $result["openid"]=$openid;
                             return $result;
                         }

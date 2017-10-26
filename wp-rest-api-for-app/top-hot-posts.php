@@ -15,9 +15,7 @@ if ( empty( $data ) ) {
 // Create the response object
 $response = new WP_REST_Response( $data ); 
 // Add a custom status code
-$response->set_status( 201 ); 
-// Add a custom header
-//$response->header( 'Location', 'https://www.watch-life.net' );
+$response->set_status( 200 );
 return $response;
 }
 
@@ -81,7 +79,7 @@ if ( empty( $data ) ) {
 // Create the response object
 $response = new WP_REST_Response($data); 
 // Add a custom status code
-$response->set_status( 201 ); 
+$response->set_status( 200 ); 
 // Add a custom header
 //$response->header( 'Location', 'https://www.watch-life.net' );
 return $response;

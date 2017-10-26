@@ -39,7 +39,7 @@ function postLike($request) {
                 return new WP_Error( 'error', 'post like error', array( 'status' => 404 ) );
               }
              $response = new WP_REST_Response($data);
-             $response->set_status( 201 ); 
+             $response->set_status( 200 ); 
              return $response;
             
         }
@@ -60,7 +60,7 @@ function post_like_json($openid,$postid) {
         {
             $result["code"]="success";
             $result["message"]= "post  like success  ";
-            $result["status"]="201";    
+            $result["status"]="200";    
             return $result;
         
         }
@@ -127,7 +127,7 @@ function getIsLike($request) {
                 return new WP_Error( 'error', 'post like error', array( 'status' => 404 ) );
               }
              $response = new WP_REST_Response($data);
-             $response->set_status( 201 ); 
+             $response->set_status( 200 ); 
              return $response;
             
         }
@@ -146,7 +146,7 @@ function post_islike_json($openid,$postid) {
         
             $result["code"]="success";
             $result["message"]= "you have  posted like ";
-            $result["status"]="201";                   
+            $result["status"]="200";                   
             return $result;
         
         
