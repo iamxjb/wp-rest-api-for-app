@@ -6,8 +6,8 @@ function custom_fields_rest_prepare_post( $data, $post, $request) {
 
     global $wpdb;
 
-	$_data = $data->data;	 
-	//$post_id = ( null === $post_id ) ? get_the_ID() : $post_id;
+    $_data = $data->data;    
+    //$post_id = ( null === $post_id ) ? get_the_ID() : $post_id;
     $post_id =$post->ID;
     
     $images =getPostImages(get_the_content(), $post_id); 
@@ -47,7 +47,89 @@ function custom_fields_rest_prepare_post( $data, $post, $request) {
     
     //$unset( $_data['content'] );
     
-	$data->data = $_data; 
+    $data->data = $_data; 
     
-	return $data; 
+    return $data; 
+}
+
+
+add_action( 'rest_api_init', function () {
+  register_rest_route( 'watch-life-net/v1', 'post/swipe', array(
+    'methods' => 'GET',
+    'callback' => 'getPostSwipe'
+  ) );
+} );
+
+
+function getPostSwipe($request) {    
+    
+    $data=post_swipe_json(); 
+    if (empty($data)) {
+        return new WP_Error( 'error', 'post swipe is  error', array( 'status' => 404 ) );
+      }
+     $response = new WP_REST_Response($data);
+     $response->set_status( 200 ); 
+     return $response;
+
+}
+
+function post_swipe_json(){
+        global $wpdb;
+        $postSwipeIDs = get_option('wf_swipe');
+
+        if(!empty($postSwipeIDs))
+        {
+            $sql="SELECT *  from ".$wpdb->posts." where id in(".$postSwipeIDs.")";
+            $_posts = $wpdb->get_results($sql);
+            $posts =array();
+            foreach ($_posts as $post) {
+    
+                $post_id = (int) $post->ID;
+                $post_title = stripslashes($post->post_title);
+                $like_total = (int) $post->like_total;
+                $post_date =$post->post_date;
+                $post_permalink = get_permalink($post->ID);            
+                $_data["id"]  =$post_id;
+                $_data["post_title"] =$post_title; 
+                $_data["like_count"] =$like_total;  
+                $_data["post_date"] =$post_date; 
+                $_data["post_permalink"] =$post_permalink;
+                
+                $pageviews = (int) get_post_meta( $post_id, 'wl_pageviews',true);
+                $_data['pageviews'] = $pageviews;
+
+                $comment_total = $wpdb->get_var("SELECT COUNT(1) FROM ".$wpdb->comments." where  comment_approved = '1' and comment_post_ID=".$post_id);
+                $_data['comment_total']= $comment_total;
+
+                $images =getPostImages($post->post_content,$post_id);         
+                
+                $_data['post_thumbnail_image']=$images['post_thumbnail_image'];
+                $_data['content_first_image']=$images['content_first_image'];
+                $_data['post_medium_image_300']=$images['post_medium_image_300'];
+                $_data['post_thumbnail_image_624']=$images['post_thumbnail_image_624'];
+                $posts[] = $_data;
+
+                
+            
+            
+            }
+
+            $result["code"]="success";
+            $result["message"]= "get post  swipe success  ";
+            $result["status"]="200";
+            $result["posts"]=$posts;      
+            return $result;
+  
+
+            
+        
+        }
+        else
+        {
+            $result["code"]="success";
+            $result["message"]= " get post swipe error";
+            $result["status"]="500";                   
+            return $result;
+        }
+     
 }

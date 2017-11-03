@@ -325,4 +325,3 @@ function get_praise_thisyear_json($limit = 10) {
  return $posts;     
     
 }
-
