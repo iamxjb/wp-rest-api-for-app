@@ -30,6 +30,11 @@ function get_post_image_url($image_id, $size='full'){
 
 function getPostImages($post_content,$post_id){
     $content_first_image= get_post_content_first_image($post_content);
+    if(empty($content_first_image))
+    {
+        $content_first_image='';
+    }
+
     $post_thumbnail_image_150='';
     $post_medium_image_300='';
     $post_thumbnail_image_624=''; 
