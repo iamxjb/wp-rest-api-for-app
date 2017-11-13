@@ -16,6 +16,12 @@
 
 https://www.watch-life.net/wordpress-weixin-app
 
+# 镜像下载地址
+
+如果因为某些原因github无法访问，请通过如下镜像地址下载：
+
+https://gitee.com/iamxjb/wp-rest-api-for-app
+
 
 # 使用说明：
 
