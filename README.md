@@ -31,6 +31,7 @@ https://gitee.com/iamxjb/wp-rest-api-for-app
 
 wordpress后台管理的设置菜单里面，找到“微信小程序设置”菜单，点击进入后，如下图所示：
 
+
 ![wp-rest-api-for-app2](https://www.watch-life.net/images/2017/09/option-openid.png) 
 
 
