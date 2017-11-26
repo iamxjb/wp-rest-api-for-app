@@ -46,7 +46,27 @@ function custom_fields_rest_prepare_post( $data, $post, $request) {
         
     
     //$unset( $_data['content'] );
+
+    unset($_data['excerpt']);
+    unset($_data['featured_media']);
+    unset($_data['format']);
+    unset($_data['ping_status']);
+    unset($_data['template']);
+    unset($_data['type']);
+    //unset($_data['slug']);
+    unset($_data['modified_gmt']);
+    unset($_data['date_gmt']);
+    unset($_data['meta']);
+    unset($_data['guid']);
+    unset($_data['curies']);
+    unset($_data['modified']);
+    unset($_data['status']);
+    unset($_data['comment_status']);
+    unset($_data['sticky']);    
     
+    unset($_data['author']); 
+    unset($_data['_links']); 
+      
     $data->data = $_data; 
     
     return $data; 
@@ -76,12 +96,34 @@ function getPostSwipe($request) {
 function post_swipe_json(){
         global $wpdb;
         $postSwipeIDs = get_option('wf_swipe');
+		$posts =array();
 
+		$siteurl= site_url();
+		$pos = strpos($siteurl, 'www.watch-life.net');
+
+		if($pos)
+		{
+			$_data["id"]  ="1";
+	        $_data["post_title"] =""; 
+	        $_data["like_count"] ="";  
+	        $_data["post_date"] =""; 
+	        $_data["post_permalink"] ="";
+	        $_data['pageviews'] ="";
+	        $_data['post_thumbnail_image']="https://www.watch-life.net/images/weixinapp.jpg";
+	        $_data['content_first_image']="https://www.watch-life.net/images/weixinapp.jpg";
+	        $_data['post_medium_image_300']="https://www.watch-life.net/images/weixinapp.jpg";
+	        $_data['post_thumbnail_image_624']="https://www.watch-life.net/images/weixinapp.jpg";
+	        $_data['comment_total']="0"; 
+	        $_data['type']="apppage";                 
+	        $posts[] = $_data;  
+		}
+
+		      
         if(!empty($postSwipeIDs))
         {
             $sql="SELECT *  from ".$wpdb->posts." where id in(".$postSwipeIDs.")";
             $_posts = $wpdb->get_results($sql);
-            $posts =array();
+            
             foreach ($_posts as $post) {
     
                 $post_id = (int) $post->ID;
@@ -94,6 +136,7 @@ function post_swipe_json(){
                 $_data["like_count"] =$like_total;  
                 $_data["post_date"] =$post_date; 
                 $_data["post_permalink"] =$post_permalink;
+                $_data['type']="detailpage";  
                 
                 $pageviews = (int) get_post_meta( $post_id, 'wl_pageviews',true);
                 $_data['pageviews'] = $pageviews;
