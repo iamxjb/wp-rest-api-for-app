@@ -22,6 +22,3 @@ include(WP_REST_API_FOR_APP_PLUGIN_DIR . 'weixin-praise.php');    //赞赏
 include(WP_REST_API_FOR_APP_PLUGIN_DIR . 'api.php');    // 公用函数
 include(WP_REST_API_FOR_APP_PLUGIN_DIR . 'weixin-comment.php');    // 微信提交评论
 include(WP_REST_API_FOR_APP_PLUGIN_DIR . 'weixin-send-message.php');    // 发送微信模版消息
-include(WP_REST_API_FOR_APP_PLUGIN_DIR . 'wexin-app-link.php');    // 获取微信小程序id列表
-
-
