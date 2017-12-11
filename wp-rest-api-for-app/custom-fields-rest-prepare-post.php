@@ -64,8 +64,8 @@ function custom_fields_rest_prepare_post( $data, $post, $request) {
     unset($_data['comment_status']);
     unset($_data['sticky']);    
     
-    unset($_data['author']); 
-    unset($_data['_links']); 
+    unset($_data['author']);
+    
       
     $data->data = $_data; 
     
