@@ -15,6 +15,17 @@ function sendmessage($request) {
     $form_id=$request['form_id'];
     $total_fee=$request['total_fee'];
     $flag=$request['flag'];
+    $fromUser='';
+    $parent=0;
+
+    if (isset($request['fromUser'])) {
+        $fromUser =$request['fromUser'];
+    }
+
+    if (isset($request['parent'])) {
+        $parent =(int)$request['parent'];
+    }
+
     if(empty($openid)  || empty($template_id) || empty($postid) || empty($form_id) || empty($total_fee) || empty($flag))
     {
         return new WP_Error( 'error', 'openid or template_id  or postid or form_id  or total_fee or flag is empty', array( 'status' => 500 ) );
@@ -25,7 +36,7 @@ function sendmessage($request) {
     
     else
     {
-        $data=sendmessage_json($openid ,$template_id ,$postid,$form_id,$total_fee,$flag); 
+        $data=sendmessage_json($openid ,$template_id ,$postid,$form_id,$total_fee,$flag,$fromUser,$parent); 
         if (empty($data)) {
             return new WP_Error( 'error', 'get openid error', array( 'status' => 404 ) );
           }  
@@ -40,7 +51,7 @@ function sendmessage($request) {
     }    
     
 }
-function sendmessage_json($openid ,$template_id ,$postid,$form_id,$total_fee,$flag) {
+function sendmessage_json($openid ,$template_id ,$postid,$form_id,$total_fee,$flag,$fromUser,$parent) {
 
 
         //$wl_name = get_post_meta( $postid, 'wl_name',true);
@@ -50,8 +61,13 @@ function sendmessage_json($openid ,$template_id ,$postid,$form_id,$total_fee,$fl
         $appsecret = get_option('wf_secret');
 
         $page='';
-        $total_fee= $total_fee.'元';
-        if($flag=='1')
+        if($flag =='1'  || $flag=='2' )
+        {
+            $total_fee= $total_fee.'元';
+        }
+
+        
+        if($flag=='1' || $flag=='3' )
         {
             $page='pages/detail/detail?id='.$postid;
 
@@ -80,25 +96,57 @@ function sendmessage_json($openid ,$template_id ,$postid,$form_id,$total_fee,$fl
                 {
                     $access_token = $access_array['access_token']; 
                     $expires_in = $access_array['expires_in'];
+                    $data = array();
 
-                    $data = array(
-                        "keyword1"=>array(
-                        "value"=>$total_fee,                     
-                         "color" =>"#173177"
-                        ),
-                        "keyword2"=>array(
-                            "value"=>'谢谢你的赞赏,你的支持,是我前进的动力.',
-                            "color"=> "#173177"
-                        )
-                    );
+                    
 
+                    $data1 = array(
+                            "keyword1"=>array(
+                            "value"=>$total_fee,                     
+                             "color" =>"#173177"
+                            ),
+                            "keyword2"=>array(
+                                "value"=>'谢谢你的赞赏,你的支持,是我前进的动力.',
+                                "color"=> "#173177"
+                            )
+                        );  
+
+                     date_default_timezone_set('PRC');
+                     $datetime =date('Y-m-d H:i:s');
+                     $data2 = array(
+                            "keyword1"=>array(
+                            "value"=>$fromUser,                     
+                             "color" =>"#173177"
+                            ),
+                            "keyword2"=>array(
+                                "value"=>$total_fee,
+                                "color"=> "#173177"
+                            ),
+                            "keyword3"=>array(
+                                "value"=>$datetime,
+                                "color"=> "#173177"
+                            )
+                        );  
+
+
+                    if($flag=='1' || $flag=='2' )
+                    {
+                        
+                       $postdata['data']=$data1;
+
+                    }
+                    elseif ($flag=='3') {
+                       
+                        $postdata['data']=$data2;
+                        
+                    }
 
                     $postdata['touser']=$openid;
                     $postdata['template_id']=$template_id;
                     $postdata['page']=$page;
                     $postdata['form_id']=$form_id;
                     $postdata['template_id']=$template_id;
-                    $postdata['data']=$data;
+                    
 
                     $url ="https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=".$access_token;
 
@@ -108,8 +156,27 @@ function sendmessage_json($openid ,$template_id ,$postid,$form_id,$total_fee,$fl
                         $access_array = json_decode($access_result,true);
                         if($access_array['errcode'] =='0')
                         {
-                            $result["code"]="success";
-                            $result["message"]= "sent message  success";
+
+                            
+                            if($parent  !=0)
+                            {
+                                $delFlag=delete_comment_meta($parent,"formId",$form_id);
+                                if($delFlag)
+                                {
+                                  $result["message"]= "sent message  success,del formId success";  
+                                }
+                                else
+                                {
+                                   $result["message"]= "sent message  success,del formId fail"; 
+                                }
+                                
+                            }
+                            else
+                            {
+                                $result["message"]= "sent message  success";
+                            }                           
+                            
+                            $result["code"]="success";                            
                             $result["status"]="200";                   
                             return $result;
 

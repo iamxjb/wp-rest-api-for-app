@@ -18,7 +18,20 @@ function addcomment($request) {
     $content =$request['content'];
     $author_url =$request['author_url'];    
     $openid =$request['openid'];
-    $reqparent ='0'; 
+    $reqparent ='0';
+    $userid=0;
+    $formId='';
+
+    if(isset($request['userid']))
+    {
+        $userid =(int)$request['userid']; 
+    }
+
+    if(isset($request['formId']))
+    {
+        $formId =(int)$request['formId']; 
+    }
+
     if(isset($request['parent']))
     {
         $reqparent =$request['parent']; 
@@ -65,7 +78,7 @@ function addcomment($request) {
         else
         {
         
-            $data=add_comment_json($post,$author_name,$author_email,$author_url,$content,$parent,$openid); 
+            $data=add_comment_json($post,$author_name,$author_email,$author_url,$content,$parent,$openid,$userid,$formId); 
             if (empty($data)) {
                 return new WP_Error( 'error', 'add comment error', array( 'status' => 404 ) );
               }
@@ -80,14 +93,16 @@ function addcomment($request) {
 
 }
 
-function add_comment_json($post,$author_name,$author_email,$author_url,$content,$parent,$openid){
+function add_comment_json($post,$author_name,$author_email,$author_url,$content,$parent,$openid,$userid,$formId){
     
         global $wpdb;
         $user_id =0;
+        $useropenid="";
         $sql ="SELECT ID FROM ".$wpdb->users ." WHERE user_login='".$openid."'";
         $users = $wpdb->get_results($sql);
         foreach ($users as $user) {
             $user_id = (int) $user->ID;
+            
         }
         $commentdata = array(
         'comment_post_ID' => $post, // to which post the comment will show up
@@ -104,9 +119,36 @@ function add_comment_json($post,$author_name,$author_email,$author_url,$content,
 
         if($comment_id)
         {
+            $useropenid="";
+            if($userid !=0)
+            {
+                $sql ="SELECT user_login FROM ".$wpdb->users ." WHERE ID=".$userid;         
+                $users = $wpdb->get_results($sql);
+                foreach ($users as $user) {
+                    $useropenid = $user->user_login;
+                    
+                }
+
+            }
+
+            $addcommentmetaflag=false;
+            if($formId !='')
+            {
+                $addcommentmetaflag =add_comment_meta($comment_id, 'formId', $formId,false); 
+
+            }
+
             $result["code"]="success";
-            $result["message"]= "add comment success";
-            $result["status"]="200";    
+            if($addcommentmetaflag)
+            {
+              $result["message"]= "add comment and formId success";  
+            }
+            else
+             {
+                $result["message"]= "add comment success,add formId fail";
+             } 
+            $result["status"]="200"; 
+            $result["useropenid"]=$useropenid;  
             return $result;
         
         }
