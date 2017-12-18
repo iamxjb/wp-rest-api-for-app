@@ -29,7 +29,7 @@ function addcomment($request) {
 
     if(isset($request['formId']))
     {
-        $formId =(int)$request['formId']; 
+        $formId =$request['formId']; 
     }
 
     if(isset($request['parent']))
