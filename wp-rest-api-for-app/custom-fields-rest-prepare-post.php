@@ -41,6 +41,14 @@ function custom_fields_rest_prepare_post( $data, $post, $request) {
     }
     
     $_data['avatarurls']= $avatarurls; 
+
+
+    $next_post = get_next_post($category_id, '', 'category');
+    $previous_post = get_previous_post($category_id, '', 'category');
+    $_data['next_post_id'] = $next_post->ID;
+    $_data['next_post_title'] = $next_post->post_title;
+    $_data['previous_post_id'] = $previous_post->ID;
+    $_data['previous_post_title'] = $previous_post->post_title;
         
         
         
@@ -62,8 +70,7 @@ function custom_fields_rest_prepare_post( $data, $post, $request) {
     unset($_data['modified']);
     unset($_data['status']);
     unset($_data['comment_status']);
-    unset($_data['sticky']);    
-    
+    unset($_data['sticky']);
     unset($_data['author']); 
       
     $data->data = $_data; 
@@ -98,24 +105,24 @@ function post_swipe_json(){
 		$posts =array();
 
 		$siteurl= site_url();
-		$pos = strpos($siteurl, 'www.watch-life.net');
+		// $pos = strpos($siteurl, 'www.watch-life.net');
 
-		if($pos)
-		{
-			$_data["id"]  ="1";
-	        $_data["post_title"] =""; 
-	        $_data["like_count"] ="";  
-	        $_data["post_date"] =""; 
-	        $_data["post_permalink"] ="";
-	        $_data['pageviews'] ="";
-	        $_data['post_thumbnail_image']="https://www.watch-life.net/images/weixinapp.jpg";
-	        $_data['content_first_image']="https://www.watch-life.net/images/weixinapp.jpg";
-	        $_data['post_medium_image_300']="https://www.watch-life.net/images/weixinapp.jpg";
-	        $_data['post_thumbnail_image_624']="https://www.watch-life.net/images/weixinapp.jpg";
-	        $_data['comment_total']="0"; 
-	        $_data['type']="apppage";                 
-	        $posts[] = $_data;  
-		}
+		// if($pos)
+		// {
+		// 	$_data["id"]  ="1";
+	 //        $_data["post_title"] =""; 
+	 //        $_data["like_count"] ="";  
+	 //        $_data["post_date"] =""; 
+	 //        $_data["post_permalink"] ="";
+	 //        $_data['pageviews'] ="";
+	 //        $_data['post_thumbnail_image']="https://www.watch-life.net/images/weixinapp.jpg";
+	 //        $_data['content_first_image']="https://www.watch-life.net/images/weixinapp.jpg";
+	 //        $_data['post_medium_image_300']="https://www.watch-life.net/images/weixinapp.jpg";
+	 //        $_data['post_thumbnail_image_624']="https://www.watch-life.net/images/weixinapp.jpg";
+	 //        $_data['comment_total']="0"; 
+	 //        $_data['type']="apppage";                 
+	 //        $posts[] = $_data;  
+		// }
 
 		      
         if(!empty($postSwipeIDs))
