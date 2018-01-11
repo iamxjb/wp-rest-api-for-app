@@ -180,14 +180,21 @@ function get_subscription_json($user_id) {
             $result["code"]="success";
             $result["message"]= "get subscription  success ";
             $result["status"]="200";
-            $result["subscription"]=$usermeta['wl_sub'];
-            $substr=implode(",",$usermeta['wl_sub']);
-            $result["substr"]=$substr; 
+            
+            if(!empty($usermeta['wl_sub']))
+            {
+            	$result["subscription"]=$usermeta['wl_sub'];
+            	$substr=implode(",",$usermeta['wl_sub']);
+            	$result["substr"]=$substr; 
+            	$sql="SELECT SQL_CALC_FOUND_ROWS  ".$wpdb->posts.".ID ,".$wpdb->posts.".post_title  FROM ".$wpdb->posts."  LEFT JOIN ".$wpdb->term_relationships." ON (".$wpdb->posts.".ID = ".$wpdb->term_relationships.".object_id) WHERE 1=1  AND ( ".$wpdb->term_relationships.".term_taxonomy_id IN (".$substr.")) AND ".$wpdb->posts.".post_type = 'post' AND (".$wpdb->posts.".post_status = 'publish') GROUP BY ".$wpdb->posts.".ID ORDER BY ".$wpdb->posts.".post_date DESC LIMIT 0, 20";
+	            $usermetaList =$wpdb->get_results($sql); 
+	            $result["usermetaList"]=$usermetaList;
+
+            }
+            
             //$sql="SELECT SQL_CALC_FOUND_ROWS  wp_posts.ID ,wp_posts.post_title  FROM wp_posts  LEFT JOIN wp_term_relationships ON (wp_posts.ID = wp_term_relationships.object_id) WHERE 1=1  AND ( wp_term_relationships.term_taxonomy_id IN (".$substr.")) AND wp_posts.post_type = 'post' AND (wp_posts.post_status = 'publish') GROUP BY wp_posts.ID ORDER BY wp_posts.post_date DESC LIMIT 0, 20";
-            $sql="SELECT SQL_CALC_FOUND_ROWS  ".$wpdb->posts.".ID ,".$wpdb->posts.".post_title  FROM ".$wpdb->posts."  LEFT JOIN ".$wpdb->term_relationships." ON (".$wpdb->posts.".ID = ".$wpdb->term_relationships.".object_id) WHERE 1=1  AND ( ".$wpdb->term_relationships.".term_taxonomy_id IN (".$substr.")) AND ".$wpdb->posts.".post_type = 'post' AND (".$wpdb->posts.".post_status = 'publish') GROUP BY ".$wpdb->posts.".ID ORDER BY ".$wpdb->posts.".post_date DESC LIMIT 0, 20";
-            $usermetaList =$wpdb->get_results($sql); 
-            $result["usermetaList"]=$usermetaList;
-            $result["sql"]=$sql;                   
+            
+            //$result["sql"]=$sql;                   
             return $result;        
         
     }
