@@ -13,6 +13,8 @@ function getOpenid($request) {
     $encryptedData=$request['encryptedData'];
     $iv=$request['iv'];
     $avatarUrl=$request['avatarUrl'];
+    $nickname=empty($request['nickname'])?'':$request['nickname'];
+    
     if(empty($js_code))
     {
         return new WP_Error( 'error', 'js_code is empty', array( 'status' => 500 ) );
@@ -23,7 +25,7 @@ function getOpenid($request) {
     
     else
     {
-        $data=post_openid_json($js_code,$encryptedData,$iv,$avatarUrl); 
+        $data=post_openid_json($js_code,$encryptedData,$iv,$avatarUrl,$nickname); 
         if (empty($data)) {
             return new WP_Error( 'error', 'get openid error', array( 'status' => 404 ) );
           }  
@@ -36,7 +38,7 @@ function getOpenid($request) {
     }    
     
 }
-function post_openid_json($js_code,$encryptedData,$iv,$avatarUrl) {
+function post_openid_json($js_code,$encryptedData,$iv,$avatarUrl,$nickname) {
 
 
         $appid = get_option('wf_appid');
@@ -58,20 +60,15 @@ function post_openid_json($js_code,$encryptedData,$iv,$avatarUrl) {
                 $access_array = json_decode($access_result,true);
                 if(empty($access_array['errcode']))
                 {
-                    $openid = $access_array['openid']; 
-                    $sessionKey = $access_array['session_key'];                    
-                    $pc = new WXBizDataCrypt($appid, $sessionKey);
-                    $errCode = $pc->decryptData($encryptedData, $iv, $data );
-                    if ($errCode == 0) {
-                    
-                        if(!username_exists($openid))
+                    $openid = $access_array['openid'];
+                    if(!username_exists($openid))
                         {
-                            $data =json_decode($data,true);
-                            $unionId = $data['unionId'];
+                            
                             
                             $userdata = array(
                                 'user_login'  =>  $openid,
-                                'user_nicename'=> $unionId,
+                                'nickname'=> $nickname,
+                                'user_nicename'=> $nickname,
                                 'display_name' => $avatarUrl,
                                 'user_pass'   =>  NULL 
                             );
@@ -103,16 +100,8 @@ function post_openid_json($js_code,$encryptedData,$iv,$avatarUrl) {
                             $result["openid"]=$openid;
                             return $result;
                         }
-                        
-                    }
-                    else {
+
                     
-                        $result["code"]="success";
-                        $result["message"]=$errCode;
-                        $result["status"]="500";                   
-                        return $result;
-                        
-                    } 
                     
                 }               
                 else
