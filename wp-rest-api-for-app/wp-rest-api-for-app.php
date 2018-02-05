@@ -3,7 +3,7 @@
 Plugin Name: WP REST API For App
 Plugin URI: http://www.watch-life.net
 Description: 为微信小程序、app提供定制WordPress rest api
-Version: 1
+Version: 1.5
 Author: jianbo
 Author URI: http://www.watch-life.net
 License: GPL v3
@@ -25,5 +25,6 @@ include(WP_REST_API_FOR_APP_PLUGIN_DIR . 'weixin-send-message.php');    // 发�
 include(WP_REST_API_FOR_APP_PLUGIN_DIR . 'do-not-show-users.php');    // 不显示用户列表
 include(WP_REST_API_FOR_APP_PLUGIN_DIR . 'category-subscription.php');    // 分类订阅，显示，取消
 include(WP_REST_API_FOR_APP_PLUGIN_DIR . 'custom-fields-rest_prepare_comment.php');    // 自定义评论输出的字段
+include(WP_REST_API_FOR_APP_PLUGIN_DIR . 'weixin-qrcode.php');    // 创建海报
 
 

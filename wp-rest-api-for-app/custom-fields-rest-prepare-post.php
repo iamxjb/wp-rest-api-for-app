@@ -31,34 +31,35 @@ function custom_fields_rest_prepare_post( $data, $post, $request) {
 
     
     $like_count = $wpdb->get_var("SELECT COUNT(1) FROM ".$wpdb->postmeta." where meta_value='like' and post_id=".$post_id);
-    $_data['like_count']= $like_count;
+    $_data['like_count']= $like_count;    
     $params = $request->get_params();
-     if ( isset( $params['id'] ) ) { 
-            
-            $sql="SELECT meta_key , (SELECT display_name from ".$wpdb->users." WHERE user_login=substring(meta_key,2)) as avatarurl FROM ".$wpdb->postmeta." where meta_value='like' and post_id=".$post_id;
-            $likes = $wpdb->get_results($sql);
-            $avatarurls =array();
-            foreach ($likes as $like) {
-                $_avatarurl['avatarurl']  =$like->avatarurl;   
-                $avatarurls[] = $_avatarurl;        
-            }
+     if ( isset( $params['id'] ) ) {
+
+        $sql="SELECT meta_key , (SELECT display_name from ".$wpdb->users." WHERE user_login=substring(meta_key,2)) as avatarurl FROM ".$wpdb->postmeta." where meta_value='like' and post_id=".$post_id;
+        $likes = $wpdb->get_results($sql);
+        $avatarurls =array();
+        foreach ($likes as $like) {
+            $_avatarurl['avatarurl']  =$like->avatarurl;   
+            $avatarurls[] = $_avatarurl;        
         }
-        else 
-        {
-            unset($_data['content'] );   
-            unset($_data['author']); 
-        }
+        $_data['avatarurls']= $avatarurls; 
+    }
+    else 
+    {
+        unset($_data['content'] );   
+        unset($_data['author']); 
+    }
     
     
-    $_data['avatarurls']= $avatarurls; 
+    
 
-
+    $category_id=$category[0]->term_id;
     $next_post = get_next_post($category_id, '', 'category');
     $previous_post = get_previous_post($category_id, '', 'category');
-    $_data['next_post_id'] = $next_post->ID;
-    $_data['next_post_title'] = $next_post->post_title;
-    $_data['previous_post_id'] = $previous_post->ID;
-    $_data['previous_post_title'] = $previous_post->post_title;
+    $_data['next_post_id'] = !empty($next_post->ID)?$next_post->ID:null;
+    $_data['next_post_title'] = !empty($next_post->post_title)?$next_post->post_title:null;
+    $_data['previous_post_id'] = !empty($previous_post->ID)?$previous_post->ID:null;
+    $_data['previous_post_title'] = !empty($previous_post->post_title)?$previous_post->post_title:null;
         
         
         
@@ -114,26 +115,33 @@ function post_swipe_json(){
         $postSwipeIDs = get_option('wf_swipe');
 		$posts =array();
 
-		$siteurl= site_url();
-		// $pos = strpos($siteurl, 'www.watch-life.net');
+		      
+        // $_data['post_thumbnail_image']="https://www.watch-life.net/images/weixinapp.jpg";
+        // $_data['content_first_image']="https://www.watch-life.net/images/weixinapp.jpg";
+        // $_data['post_medium_image_300']="https://www.watch-life.net/images/weixinapp.jpg";
+        // $_data['post_thumbnail_image_624']="https://www.watch-life.net/images/weixinapp.jpg"; 
+        // $_data['appid']="" ;        
+        // $_data['type']="apppage"; 
+        // $_data['url']="../list/list?categoryID=1" ;        
+        // $posts[] = $_data; 
 
-		// if($pos)
-		// {
-		// 	$_data["id"]  ="1";
-	 //        $_data["post_title"] =""; 
-	 //        $_data["like_count"] ="";  
-	 //        $_data["post_date"] =""; 
-	 //        $_data["post_permalink"] ="";
-	 //        $_data['pageviews'] ="";
-	 //        $_data['post_thumbnail_image']="https://www.watch-life.net/images/weixinapp.jpg";
-	 //        $_data['content_first_image']="https://www.watch-life.net/images/weixinapp.jpg";
-	 //        $_data['post_medium_image_300']="https://www.watch-life.net/images/weixinapp.jpg";
-	 //        $_data['post_thumbnail_image_624']="https://www.watch-life.net/images/weixinapp.jpg";
-	 //        $_data['comment_total']="0"; 
-	 //        $_data['type']="apppage";                 
-	 //        $posts[] = $_data;  
-		// }
+        // $_data['post_thumbnail_image']="https://www.watch-life.net/images/weixinapp.jpg";
+        // $_data['content_first_image']="https://www.watch-life.net/images/weixinapp.jpg";
+        // $_data['post_medium_image_300']="https://www.watch-life.net/images/weixinapp.jpg";
+        // $_data['post_thumbnail_image_624']="https://www.watch-life.net/images/weixinapp.jpg";        
+        // $_data['type']="webpage"; 
+        // $_data['url']="https://www.watch-life.net/life-thinking/bye-2017.html" ;
+        // $_data['appid']="" ;         
+        // $posts[] = $_data;
 
+        // $_data['post_thumbnail_image']="https://www.watch-life.net/images/weixinapp.jpg";
+        // $_data['content_first_image']="https://www.watch-life.net/images/weixinapp.jpg";
+        // $_data['post_medium_image_300']="https://www.watch-life.net/images/weixinapp.jpg";
+        // $_data['post_thumbnail_image_624']="https://www.watch-life.net/images/weixinapp.jpg";        
+        // $_data['type']="miniapp"; 
+        // $_data['url']="pages/shelf/shelf" ;
+        // $_data['appid']="wx55ea6098e41af5c4" ;        
+        // $posts[] = $_data;
 		      
         if(!empty($postSwipeIDs))
         {

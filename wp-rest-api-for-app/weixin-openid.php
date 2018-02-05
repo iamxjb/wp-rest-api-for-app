@@ -14,7 +14,6 @@ function getOpenid($request) {
     $iv=$request['iv'];
     $avatarUrl=$request['avatarUrl'];
     $nickname=empty($request['nickname'])?'':$request['nickname'];
-    
     if(empty($js_code))
     {
         return new WP_Error( 'error', 'js_code is empty', array( 'status' => 500 ) );
@@ -60,15 +59,21 @@ function post_openid_json($js_code,$encryptedData,$iv,$avatarUrl,$nickname) {
                 $access_array = json_decode($access_result,true);
                 if(empty($access_array['errcode']))
                 {
-                    $openid = $access_array['openid'];
-                    if(!username_exists($openid))
+                    $openid = $access_array['openid']; 
+                    $sessionKey = $access_array['session_key'];                    
+                    $pc = new WXBizDataCrypt($appid, $sessionKey);
+                    $errCode = $pc->decryptData($encryptedData, $iv, $data );
+                    if ($errCode == 0) {
+                    
+                        if(!username_exists($openid))
                         {
-                            
+                            $data =json_decode($data,true);
+                            $unionId = $data['unionId'];
                             
                             $userdata = array(
                                 'user_login'  =>  $openid,
                                 'nickname'=> $nickname,
-                                'user_nicename'=> $nickname,
+                                'user_nicename'=> $unionId,
                                 'display_name' => $avatarUrl,
                                 'user_pass'   =>  NULL 
                             );
@@ -100,8 +105,16 @@ function post_openid_json($js_code,$encryptedData,$iv,$avatarUrl,$nickname) {
                             $result["openid"]=$openid;
                             return $result;
                         }
-
+                        
+                    }
+                    else {
                     
+                        $result["code"]="success";
+                        $result["message"]=$errCode;
+                        $result["status"]="500";                   
+                        return $result;
+                        
+                    } 
                     
                 }               
                 else
@@ -127,23 +140,7 @@ function post_openid_json($js_code,$encryptedData,$iv,$avatarUrl,$nickname) {
         }
 }
 
-//发起https请求
-function https_request($url)
-    {
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($curl,  CURLOPT_SSL_VERIFYHOST, FALSE);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_TIMEOUT, 500);  
-        $data = curl_exec($curl);
-        if (curl_errno($curl)){
-            return 'ERROR';
-        }
-        curl_close($curl);
-        return $data;
-    }
-    
+
  // 微信小程序设置菜单
 add_action('admin_menu', 'weixinapp_create_menu');
 function weixinapp_create_menu() {
@@ -158,6 +155,7 @@ function register_weixinappsettings() {
     register_setting( 'weixinapp-group', 'wf_appid' );
     register_setting( 'weixinapp-group', 'wf_secret' );
     register_setting( 'weixinapp-group', 'wf_swipe' );
+    register_setting( 'weixinapp-group', 'wf_poster_imageurl' );
        
     
     
@@ -183,7 +181,12 @@ function weixinapp_settings_page() {
 
         <tr valign="top">
         <th scope="row">小程序首页滑动文章ID</th>
-        <td><input type="text" name="wf_swipe" style="width:400px" value="<?php echo esc_attr( get_option('wf_swipe') ); ?>" />请用英文半角逗号分隔</td>
+        <td><input type="text" name="wf_swipe" style="width:400px" value="<?php echo esc_attr( get_option('wf_swipe') ); ?>" />(请用英文半角逗号分隔)</td>
+        </tr> 
+
+        <tr valign="top">
+        <th scope="row">海报图片默认地址</th>
+        <td><input type="text" name="wf_poster_imageurl" style="width:600px" value="<?php echo esc_attr( get_option('wf_poster_imageurl') ); ?>" /><br/>(请输完整的图片地址,例如:<span style="color: blue">https://www.watch-life.net/images/2017/06/winxinapp-wordpress-watch-life-new-700.jpg</span>)</td>
         </tr>          
     </table>
     <?php submit_button();?>
