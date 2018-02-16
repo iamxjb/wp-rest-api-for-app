@@ -26,5 +26,6 @@ include(WP_REST_API_FOR_APP_PLUGIN_DIR . 'do-not-show-users.php');    // 不显�
 include(WP_REST_API_FOR_APP_PLUGIN_DIR . 'category-subscription.php');    // 分类订阅，显示，取消
 include(WP_REST_API_FOR_APP_PLUGIN_DIR . 'custom-fields-rest_prepare_comment.php');    // 自定义评论输出的字段
 include(WP_REST_API_FOR_APP_PLUGIN_DIR . 'weixin-qrcode.php');    // 创建海报
+include(WP_REST_API_FOR_APP_PLUGIN_DIR . 'video-content.php');    //解析腾讯视频
 
 
