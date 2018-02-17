@@ -151,13 +151,11 @@ function post_swipe_json(){
             foreach ($_posts as $post) {
     
                 $post_id = (int) $post->ID;
-                $post_title = stripslashes($post->post_title);
-                $like_total = (int) $post->like_total;
+                $post_title = stripslashes($post->post_title);                
                 $post_date =$post->post_date;
                 $post_permalink = get_permalink($post->ID);            
                 $_data["id"]  =$post_id;
-                $_data["post_title"] =$post_title; 
-                $_data["like_count"] =$like_total;  
+                $_data["post_title"] =$post_title;
                 $_data["post_date"] =$post_date; 
                 $_data["post_permalink"] =$post_permalink;
                 $_data['type']="detailpage";  

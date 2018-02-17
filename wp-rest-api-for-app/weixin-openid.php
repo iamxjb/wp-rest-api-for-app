@@ -62,7 +62,7 @@ function post_openid_json($js_code,$encryptedData,$iv,$avatarUrl,$nickname) {
                     $openid = $access_array['openid']; 
                     $sessionKey = $access_array['session_key'];                    
                     $pc = new WXBizDataCrypt($appid, $sessionKey);
-                    $errCode = $pc->decryptData($encryptedData, $iv, $data );
+                    $errCode = $pc->decryptData($encryptedData, $iv, $data );                   
                     if ($errCode == 0) {
                     
                         if(!username_exists($openid))
@@ -140,63 +140,6 @@ function post_openid_json($js_code,$encryptedData,$iv,$avatarUrl,$nickname) {
         }
 }
 
-
- // 微信小程序设置菜单
-add_action('admin_menu', 'weixinapp_create_menu');
-function weixinapp_create_menu() {
-    // 创建新的顶级菜单
-    add_options_page('微信小程序设置', '微信小程序设置', 'administrator', 'weixinapp_slug', 'weixinapp_settings_page', '');
-    // 调用注册设置函数
-    add_action( 'admin_init', 'register_weixinappsettings' );
-}
-
-function register_weixinappsettings() {
-    // 注册设置
-    register_setting( 'weixinapp-group', 'wf_appid' );
-    register_setting( 'weixinapp-group', 'wf_secret' );
-    register_setting( 'weixinapp-group', 'wf_swipe' );
-    register_setting( 'weixinapp-group', 'wf_poster_imageurl' );
-       
-    
-    
-}
-
-function weixinapp_settings_page() {
-?>
-<div class="wrap">
-<h2>微信小程序设置</h2>
-<form method="post" action="options.php">
-    <?php settings_fields( 'weixinapp-group' ); ?>
-    <?php do_settings_sections( 'weixinapp-group' ); ?>
-    <table class="form-table">
-        <tr valign="top">
-        <th scope="row">AppID</th>
-        <td><input type="text" name="wf_appid" style="width:400px" value="<?php echo esc_attr( get_option('wf_appid') ); ?>" /></td>
-        </tr>
-         
-        <tr valign="top">
-        <th scope="row">AppSecret</th>
-        <td><input type="text" name="wf_secret" style="width:400px" value="<?php echo esc_attr( get_option('wf_secret') ); ?>" /></td>
-        </tr>
-
-        <tr valign="top">
-        <th scope="row">小程序首页滑动文章ID</th>
-        <td><input type="text" name="wf_swipe" style="width:400px" value="<?php echo esc_attr( get_option('wf_swipe') ); ?>" />(请用英文半角逗号分隔)</td>
-        </tr> 
-
-        <tr valign="top">
-        <th scope="row">海报图片默认地址</th>
-        <td><input type="text" name="wf_poster_imageurl" style="width:600px" value="<?php echo esc_attr( get_option('wf_poster_imageurl') ); ?>" /><br/>(请输完整的图片地址,例如:<span style="color: blue">https://www.watch-life.net/images/2017/06/winxinapp-wordpress-watch-life-new-700.jpg</span>)</td>
-        </tr>          
-    </table>
-    <?php submit_button();?>
-</form>
-</div>
-<?php }
- 
-
-
-
 /**
  * error code 说明.
  * <ul>
@@ -220,104 +163,11 @@ class ErrorCode
 
 
 /**
- * PKCS7Encoder class
+ * 对微信小程序用户加密数据的解密示例代码.
  *
- * 提供基于PKCS7算法的加解密接口.
+ * @copyright Copyright (c) 1998-2014 Tencent Inc.
  */
-class PKCS7Encoder
-{
-    public static $block_size = 16;
 
-    /**
-     * 对需要加密的明文进行填充补位
-     * @param $text 需要进行填充补位操作的明文
-     * @return 补齐明文字符串
-     */
-    function encode( $text )
-    {
-        $block_size = PKCS7Encoder::$block_size;
-        $text_length = strlen( $text );
-        //计算需要填充的位数
-        $amount_to_pad = PKCS7Encoder::$block_size - ( $text_length % PKCS7Encoder::$block_size );
-        if ( $amount_to_pad == 0 ) {
-            $amount_to_pad = PKCS7Encoder::block_size;
-        }
-        //获得补位所用的字符
-        $pad_chr = chr( $amount_to_pad );
-        $tmp = "";
-        for ( $index = 0; $index < $amount_to_pad; $index++ ) {
-            $tmp .= $pad_chr;
-        }
-        return $text . $tmp;
-    }
-
-    /**
-     * 对解密后的明文进行补位删除
-     * @param decrypted 解密后的明文
-     * @return 删除填充补位后的明文
-     */
-    function decode($text)
-    {
-
-        $pad = ord(substr($text, -1));
-        if ($pad < 1 || $pad > 32) {
-            $pad = 0;
-        }
-        return substr($text, 0, (strlen($text) - $pad));
-    }
-
-}
-
-/**
- * Prpcrypt class
- *
- * 
- */
-class Prpcrypt
-{
-    public $key;
-
-    function __construct( $k )
-    {
-        $this->key = $k;
-    }
-
-    /**
-     * 对密文进行解密
-     * @param string $aesCipher 需要解密的密文
-     * @param string $aesIV 解密的初始向量
-     * @return string 解密得到的明文
-     */
-    public function decrypt( $aesCipher, $aesIV )
-    {
-
-        try {
-            
-            $module = mcrypt_module_open(MCRYPT_RIJNDAEL_128, '', MCRYPT_MODE_CBC, '');
-            
-            mcrypt_generic_init($module, $this->key, $aesIV);
-
-            //解密
-            $decrypted = mdecrypt_generic($module, $aesCipher);
-            mcrypt_generic_deinit($module);
-            mcrypt_module_close($module);
-        } catch (Exception $e) {
-            return array(ErrorCode::$IllegalBuffer, null);
-        }
-
-
-        try {
-            //去除补位字符
-            $pkc_encoder = new PKCS7Encoder;
-            $result = $pkc_encoder->decode($decrypted);
-
-        } catch (Exception $e) {
-            //print $e;
-            return array(ErrorCode::$IllegalBuffer, null);
-        }
-        return array(0, $result);
-    }
-}
 
 
 class WXBizDataCrypt
@@ -345,7 +195,7 @@ class WXBizDataCrypt
      *
      * @return int 成功0，失败返回对应的错误码
      */
-     public function decryptData( $encryptedData, $iv, &$data )
+    public function decryptData( $encryptedData, $iv, &$data )
     {
         if (strlen($this->sessionKey) != 24) {
             return ErrorCode::$IllegalAesKey;
@@ -360,14 +210,9 @@ class WXBizDataCrypt
 
         $aesCipher=base64_decode($encryptedData);
 
-        $pc = new Prpcrypt($aesKey);
-        $result = $pc->decrypt($aesCipher,$aesIV);
-        
-        if ($result[0] != 0) {
-            return $result[0];
-        }
-     
-        $dataObj=json_decode( $result[1] );
+        $result=openssl_decrypt( $aesCipher, "AES-128-CBC", $aesKey, 1, $aesIV);
+
+        $dataObj=json_decode( $result );
         if( $dataObj  == NULL )
         {
             return ErrorCode::$IllegalBuffer;
@@ -376,9 +221,9 @@ class WXBizDataCrypt
         {
             return ErrorCode::$IllegalBuffer;
         }
-        $data = $result[1];
+        $data = $result;
         return ErrorCode::$OK;
     }
 
 }
-
+ 
