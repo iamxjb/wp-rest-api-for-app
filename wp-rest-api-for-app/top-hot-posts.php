@@ -299,7 +299,12 @@ function get_praise_thisyear_json($limit = 10) {
     
             $post_id = (int) $post->ID;
             $post_title = stripslashes($post->post_title);
-            $pageviews = (int) $post->pageviews_total;
+            $pageviews=0;
+            if(!empty($post->pageviews_total))
+            {
+                $pageviews = (int) $post->pageviews_total;
+            }
+            
             $post_date =$post->post_date;
             $post_permalink = get_permalink($post->ID);            
             $_data["post_id"]  =$post_id;
