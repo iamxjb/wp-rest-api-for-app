@@ -3,7 +3,7 @@
 Plugin Name: WP REST API For App
 Plugin URI: http://www.watch-life.net
 Description: 为微信小程序、app提供定制WordPress rest api
-Version: 1.6
+Version: 1.7
 Author: jianbo
 Author URI: http://www.watch-life.net
 License: GPL v3
