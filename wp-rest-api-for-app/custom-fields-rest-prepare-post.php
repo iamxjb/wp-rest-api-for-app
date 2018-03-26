@@ -48,6 +48,7 @@ function custom_fields_rest_prepare_post( $data, $post, $request) {
     {
         unset($_data['content'] );   
         unset($_data['author']); 
+        unset($_data['excerpt']);
     }
     
     
@@ -66,7 +67,7 @@ function custom_fields_rest_prepare_post( $data, $post, $request) {
     
     //$unset( $_data['content'] );
 
-    unset($_data['excerpt']);
+    
     unset($_data['featured_media']);
     unset($_data['format']);
     unset($_data['ping_status']);
@@ -116,14 +117,7 @@ function post_swipe_json(){
 		$posts =array();
 
 		      
-        // $_data['post_thumbnail_image']="https://www.watch-life.net/images/weixinapp.jpg";
-        // $_data['content_first_image']="https://www.watch-life.net/images/weixinapp.jpg";
-        // $_data['post_medium_image_300']="https://www.watch-life.net/images/weixinapp.jpg";
-        // $_data['post_thumbnail_image_624']="https://www.watch-life.net/images/weixinapp.jpg"; 
-        // $_data['appid']="" ;        
-        // $_data['type']="apppage"; 
-        // $_data['url']="../list/list?categoryID=1" ;        
-        // $posts[] = $_data; 
+        
 
         // $_data['post_thumbnail_image']="https://www.watch-life.net/images/weixinapp.jpg";
         // $_data['content_first_image']="https://www.watch-life.net/images/weixinapp.jpg";
@@ -178,6 +172,16 @@ function post_swipe_json(){
             
             
             }
+        $_data["post_title"] ="";
+        $_data['post_thumbnail_image']="https://www.watch-life.net/images/weixinapp.jpg";
+        $_data['content_first_image']="https://www.watch-life.net/images/weixinapp.jpg";
+        $_data['post_medium_image_300']="https://www.watch-life.net/images/weixinapp.jpg";
+        $_data['post_thumbnail_image_624']="https://www.watch-life.net/images/weixinapp.jpg"; 
+        $_data['appid']="" ;        
+        $_data['type']="apppage"; 
+        $_data['url']="../applist/applist" ; 
+        $_data['id']="1" ;       
+        $posts[] = $_data; 
 
             $result["code"]="success";
             $result["message"]= "get post  swipe success  ";
