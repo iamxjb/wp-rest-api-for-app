@@ -52,8 +52,7 @@ function custom_fields_rest_prepare_post( $data, $post, $request) {
             $avatarurls[] = $_avatarurl;        
         }
         $_data['avatarurls']= $avatarurls;
-        $_content['rendered'] =$content;
-        $_data['content']= $_content; 
+        
     }
     else 
     {
@@ -117,7 +116,7 @@ function getPostSwipe($request) {
 function post_swipe_json(){
         global $wpdb;
         $postSwipeIDs = get_option('wf_swipe');
-		$posts =array();			      
+        $posts =array();                  
         if(!empty($postSwipeIDs))
         {
             $sql="SELECT *  from ".$wpdb->posts." where id in(".$postSwipeIDs.")";
@@ -148,7 +147,18 @@ function post_swipe_json(){
                 $_data['post_thumbnail_image_624']=$images['post_thumbnail_image_624'];
                 $posts[] = $_data;               
             }
-        
+
+            // $_data["post_title"] ="";
+            // $_data['post_thumbnail_image']="https://www.watch-life.net/images/weixinapp.jpg";
+            // $_data['content_first_image']="https://www.watch-life.net/images/weixinapp.jpg";
+            // $_data['post_medium_image_300']="https://www.watch-life.net/images/weixinapp.jpg";
+            // $_data['post_thumbnail_image_624']="https://www.watch-life.net/images/weixinapp.jpg"; 
+            // $_data['appid']="" ;        
+            // $_data['type']="apppage"; 
+            // $_data['url']="../applist/applist" ; 
+            // $_data['id']="-1" ;       
+            // $posts[] = $_data; 
+
 
             $result["code"]="success";
             $result["message"]= "get post  swipe success  ";
