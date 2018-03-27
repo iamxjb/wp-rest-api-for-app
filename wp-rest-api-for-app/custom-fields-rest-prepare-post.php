@@ -9,8 +9,17 @@ function custom_fields_rest_prepare_post( $data, $post, $request) {
     $_data = $data->data;    
     //$post_id = ( null === $post_id ) ? get_the_ID() : $post_id;
     $post_id =$post->ID;
+
+    $content =get_the_content();
+     
+     $siteurl = get_option('siteurl');
+     $upload_dir = wp_upload_dir();
+     $content = str_replace( 'http:'.strstr($siteurl, '//'), 'https:'.strstr($siteurl, '//'), $content);
+     $content = str_replace( 'http:'.strstr($upload_dir['baseurl'], '//'), 'https:'.strstr($upload_dir['baseurl'], '//'), $content);
+      
+    //$_data['siteurl']=$content;       
     
-    $images =getPostImages(get_the_content(), $post_id); 
+    $images =getPostImages($content, $post_id); 
     $_data['post_thumbnail_image']=$images['post_thumbnail_image'];
     $_data['content_first_image']=$images['content_first_image'];
     $_data['post_medium_image_300']=$images['post_medium_image_300'];
@@ -42,7 +51,9 @@ function custom_fields_rest_prepare_post( $data, $post, $request) {
             $_avatarurl['avatarurl']  =$like->avatarurl;   
             $avatarurls[] = $_avatarurl;        
         }
-        $_data['avatarurls']= $avatarurls; 
+        $_data['avatarurls']= $avatarurls;
+        $_content['rendered'] =$content;
+        $_data['content']= $_content; 
     }
     else 
     {
@@ -172,7 +183,16 @@ function post_swipe_json(){
             
             
             }
-        
+        $_data["post_title"] ="";
+        $_data['post_thumbnail_image']="https://www.watch-life.net/images/weixinapp.jpg";
+        $_data['content_first_image']="https://www.watch-life.net/images/weixinapp.jpg";
+        $_data['post_medium_image_300']="https://www.watch-life.net/images/weixinapp.jpg";
+        $_data['post_thumbnail_image_624']="https://www.watch-life.net/images/weixinapp.jpg"; 
+        $_data['appid']="" ;        
+        $_data['type']="apppage"; 
+        $_data['url']="../applist/applist" ; 
+        $_data['id']="1" ;       
+        $posts[] = $_data; 
 
             $result["code"]="success";
             $result["message"]= "get post  swipe success  ";
