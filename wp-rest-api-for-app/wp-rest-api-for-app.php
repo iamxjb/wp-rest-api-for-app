@@ -28,5 +28,5 @@ include(WP_REST_API_FOR_APP_PLUGIN_DIR . 'custom-fields-rest_prepare_comment.php
 include(WP_REST_API_FOR_APP_PLUGIN_DIR . 'weixin-qrcode.php');    // 创建海报
 include(WP_REST_API_FOR_APP_PLUGIN_DIR . 'video-content.php');    //解析腾讯视频
 include(WP_REST_API_FOR_APP_PLUGIN_DIR . 'weixin-config.php');    //微信小程序配置
-
+include(WP_REST_API_FOR_APP_PLUGIN_DIR . 'weixin-enablecomment.php');    //微信小程序开启评论
 
