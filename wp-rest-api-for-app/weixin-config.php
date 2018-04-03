@@ -48,8 +48,9 @@ function weixinapp_settings_page() {
         <td>
 
             <?php
-            
-            $checkbox=empty(get_option('wf_enable_comment_option'))?'':'checked';
+
+            $wf_enable_comment_option =get_option('wf_enable_comment_option');            
+            $checkbox=empty($wf_enable_comment_option)?'':'checked';
             echo '<input name="wf_enable_comment_option"  type="checkbox"  value="1" '.$checkbox. ' />';
             
 
@@ -94,8 +95,8 @@ return $response;
 }
 
 function get_enableComment_json() {
-
-    if(empty(get_option('wf_enable_comment_option')))
+    $wf_enable_comment_option  =get_option('wf_enable_comment_option');
+    if(empty($wf_enable_comment_option ))
     {
         $result["code"]="success";
         $result["message"]= "get  enableComment success  ";
