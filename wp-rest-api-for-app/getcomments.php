@@ -68,7 +68,7 @@ function get_comments_json($postid,$limit,$page,$order)
     $result["message"]= "get  comments success";
     $result["status"]="200";
     $result["data"]=$commentslist;
-    $result["sql"]= $sql;                 
+    //$result["sql"]= $sql;                 
     return $result;         
 
 }
@@ -89,7 +89,7 @@ function getchaildcomment($postid,$comment_id,$limit,$order){
 				$data["formId"]=$comment->formId;
 				$data["userid"]=$comment->user_id;
 				$data["child"]=getchaildcomment($postid,$comment->comment_ID,$limit-1,$order);
-				$data["sql"]=$sql;
+				//$data["sql"]=$sql;
 				$commentslist[] =$data;			
 		}
 	}
