@@ -43,7 +43,7 @@ function getPostImages($post_content,$post_id){
     $thumbnail_id = get_post_thumbnail_id($post_id);
     if($thumbnail_id ){
         $thumb = wp_get_attachment_image_src($thumbnail_id, 'thumbnail');
-                $post_thumbnail_image = $thumb[0];
+        $post_thumbnail_image = $thumb[0];
     }
     else if($content_first_image)
     {          
@@ -66,13 +66,13 @@ function getPostImages($post_content,$post_id){
             }
         }
         if($flag>0)
-            {
-                $post_thumbnail_image = $post_thumbnail_image_150;
-            }
-            else
-            {
-                $post_thumbnail_image = $content_first_image; 
-            }          
+        {
+            $post_thumbnail_image = $post_thumbnail_image_150;
+        }
+        else
+        {
+            $post_thumbnail_image = $content_first_image; 
+        }          
     }
     else
     {
@@ -85,20 +85,20 @@ function getPostImages($post_content,$post_id){
     }
     else
     {
-         $_data['post_medium_image_300']=$content_first_image;
-    }  
-    if(strlen($post_thumbnail_image_624)>0)
-    {
-        $_data['post_thumbnail_image_624']=$post_thumbnail_image_624; 
-    }
-    else
-    {
-         $_data['post_thumbnail_image_624']=$content_first_image;
-    }            
-    $_data['post_thumbnail_image']=$post_thumbnail_image;
-    $_data['content_first_image']=$content_first_image; 
-    return  $_data;             
-           
+       $_data['post_medium_image_300']=$content_first_image;
+   }  
+   if(strlen($post_thumbnail_image_624)>0)
+   {
+    $_data['post_thumbnail_image_624']=$post_thumbnail_image_624; 
+}
+else
+{
+   $_data['post_thumbnail_image_624']=$content_first_image;
+}            
+$_data['post_thumbnail_image']=$post_thumbnail_image;
+$_data['content_first_image']=$content_first_image; 
+return  $_data;             
+
 }
 
 // function GetIP()
@@ -294,43 +294,52 @@ function get_content_post($url,$post_data=array(),$header=array()){
         return "错误码：".$code;
     }
 }
-//删除二维码海报，清理两分钟前创建的文件
-// function del_file($path = '.') {
-//     $current_dir = opendir($path);    //opendir()返回一个目录句柄,失败返回false
-//     while(($file = readdir($current_dir)) !== false) {    //readdir()返回打开目录句柄中的一个条目
-//         $sub_dir = $path . DIRECTORY_SEPARATOR . $file;    //构建子目录路径
-//         if($file == '.' || $file == '..') {
-//             continue;
-//         } else if(is_dir($sub_dir)) {    //如果是目录,进行递归
-//             del_file($sub_dir);
-//         } else {    //如果是文件,判断是24小时以前的文件进行删除
-//             $files = fopen($path.'/'.$file,"r");
-//             $f =fstat($files);
-//             fclose($files);
-//             if($f['mtime']<(time()-60*5)){
-//                 if(@unlink($path.'/'.$file)){
-//                     echo "删除文件【".$path.'/'.$file."】成功！<br />";
-//                 }else{
-//                     echo "删除文件【".$path.'/'.$file."】失败！<br />";
-//                 }
-//             }
-//         }
-//     }
-// }
 
 //发起https请求
 function https_request($url)
-    {
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($curl,  CURLOPT_SSL_VERIFYHOST, FALSE);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_TIMEOUT, 500);  
-        $data = curl_exec($curl);
-        if (curl_errno($curl)){
-            return 'ERROR';
-        }
-        curl_close($curl);
-        return $data;
+{
+    $curl = curl_init();
+    curl_setopt($curl, CURLOPT_URL, $url);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+    curl_setopt($curl,  CURLOPT_SSL_VERIFYHOST, FALSE);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($curl, CURLOPT_TIMEOUT, 500);  
+    $data = curl_exec($curl);
+    if (curl_errno($curl)){
+        return 'ERROR';
     }
+    curl_close($curl);
+    return $data;
+}
+
+
+function time_tran($the_time){
+    $now_time = date("Y-m-d H:i:s",time()+8*60*60); 
+    $now_time = strtotime($now_time);
+    $show_time = strtotime($the_time);
+    $dur = $now_time - $show_time;
+    if($dur < 0){
+        return $the_time; 
+    }else{
+        if($dur < 60){
+            return $dur.'秒前'; 
+        }else{
+            if($dur < 3600){
+             return floor($dur/60).'分钟前'; 
+         }
+         else{
+             if($dur < 86400){
+                 return floor($dur/3600).'小时前'; 
+             }
+             else{
+           if($dur < 259200){//3天内
+             return floor($dur/86400).'天前';
+         }
+         else{
+             return date("Y-m-d",$show_time); 
+         }
+     }
+ }
+}
+}
+}
