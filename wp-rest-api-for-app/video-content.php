@@ -2,11 +2,11 @@
 //解析腾讯视频，只支持一个腾讯视频
 function video_content_filter($content) {
 
-	//$content  =get_the_content();
-	$siteurl = get_option('siteurl');
-     $upload_dir = wp_upload_dir();
-     $content = str_replace( 'http:'.strstr($siteurl, '//'), 'https:'.strstr($siteurl, '//'), $content);
-     $content = str_replace( 'http:'.strstr($upload_dir['baseurl'], '//'), 'https:'.strstr($upload_dir['baseurl'], '//'), $content);
+	
+	// $siteurl = get_option('siteurl');
+ //     $upload_dir = wp_upload_dir();
+ //     $content = str_replace( 'http:'.strstr($siteurl, '//'), 'https:'.strstr($siteurl, '//'), $content);
+ //     $content = str_replace( 'http:'.strstr($upload_dir['baseurl'], '//'), 'https:'.strstr($upload_dir['baseurl'], '//'), $content);
     preg_match('/https\:\/\/v.qq.com\/x\/(\S*)\/(\S*)\.html/',$content,$matches);
     if($matches)
     {
