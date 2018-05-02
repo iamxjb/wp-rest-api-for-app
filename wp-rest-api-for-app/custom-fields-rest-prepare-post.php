@@ -70,7 +70,7 @@ function custom_fields_rest_prepare_post( $data, $post, $request) {
         
      
     
-    unset($_data['featured_media']);
+    //unset($_data['featured_media']);
     unset($_data['format']);
     unset($_data['ping_status']);
     unset($_data['template']);
