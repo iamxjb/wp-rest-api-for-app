@@ -292,7 +292,7 @@ function get_praise_thisyear_json($limit = 10) {
     $today = date("Y-m-d H:i:s"); //获取今天日期时间   
    // $fristday = date( "Y-m-d H:i:s",  strtotime(date("Y",time())."-1"."-1"));  //本年第一天;
     $fristday= date("Y-m-d H:i:s", strtotime("-1 year"));  
-    $sql="SELECT  ".$wpdb->posts.".ID as ID, post_title, post_name,post_content,post_date, count(".$wpdb->postmeta.".post_id) AS 'praise_total' FROM ".$wpdb->posts." LEFT JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE ".$wpdb->postmeta.".meta_value like '%praise' AND post_date BETWEEN '".$fristday."' AND '".$today."' AND post_status = 'publish' AND post_password = '' GROUP BY ".$wpdb->postmeta.".post_id ORDER  BY praise_total DESC LIMIT ". $limit;
+    $sql="SELECT  ".$wpdb->posts.".ID as ID, post_title, post_name,post_content,post_date, count(".$wpdb->postmeta.".post_id) AS 'praise_total' FROM ".$wpdb->posts." LEFT JOIN ".$wpdb->postmeta." ON ".$wpdb->posts.".ID = ".$wpdb->postmeta.".post_id WHERE ".$wpdb->postmeta.".meta_value like '%praise' AND post_date BETWEEN '".$fristday."' AND '".$today."' AND post_status = 'publish' and  post_type='post' AND post_password = '' GROUP BY ".$wpdb->postmeta.".post_id ORDER  BY praise_total DESC LIMIT ". $limit;
     $mostlikes = $wpdb->get_results($sql);
     $posts =array();
     foreach ($mostlikes as $post) {

@@ -122,7 +122,7 @@ function getmypraise($request) {
 
 function post_mypraise_json($openid) {
     global $wpdb;
-    $sql ="SELECT * from ".$wpdb->posts."  where ID in  
+    $sql ="SELECT * from ".$wpdb->posts."  where  post_type='post' and ID in  
 (SELECT post_id from ".$wpdb->postmeta." where meta_value like '%praise' and meta_key like'%".$openid."%') ORDER BY post_date desc LIMIT 20";        
         $_posts = $wpdb->get_results($sql);
         $posts =array();
