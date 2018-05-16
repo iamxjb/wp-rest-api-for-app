@@ -329,7 +329,7 @@ function get_weixin_qcrodeimg_json($postid,$path){
                   $data = json_encode($data);
                   //可在此处添加或者减少来自前端的字段
                   $QRCode = get_content_post($url,$data);//小程序二维码
-                  if(empty($QRCode['errcode']))
+                  if($QRCode !='error')
                   {
                     //输出二维码
                     file_put_contents($qrcodeurl,$QRCode);

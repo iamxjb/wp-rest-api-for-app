@@ -291,7 +291,7 @@ function get_content_post($url,$post_data=array(),$header=array()){
     if($code == "200"){
         return $content;
     }else{
-        return "错误码：".$code;
+        return "error";
     }
 }
 
