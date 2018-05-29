@@ -75,7 +75,7 @@ function post_openid_json($js_code,$encryptedData,$iv,$avatarUrl,$nickname) {
                                 'nickname'=> $nickname,
                                 'user_nicename'=> $unionId,
                                 'display_name' => $avatarUrl,
-                                'user_pass'   =>  NULL 
+                                'user_pass'   =>  $openid 
                             );
 
                                 $user_id = wp_insert_user( $userdata ) ;                    
