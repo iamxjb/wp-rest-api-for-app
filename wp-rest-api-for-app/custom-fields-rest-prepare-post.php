@@ -26,12 +26,18 @@ function custom_fields_rest_prepare_post( $data, $post, $request) {
     $_data['post_thumbnail_image_624']=$images['post_thumbnail_image_624'];
     $comments_count = wp_count_comments($post_id);
     
-    $pageviews = (int) get_post_meta( $post_id, 'wl_pageviews',true);
-    $_data['pageviews'] = $pageviews;
+   
     
     $_data['total_comments']=$comments_count->total_comments;
     $category =get_the_category($post_id);
     $_data['category_name'] =$category[0]->cat_name; 
+
+    //$date = str_replace(,"T"," ");
+
+    $post_date =$post->post_date;
+
+    $_data['date'] =time_tran($post_date);
+
     /*
     $content  =get_the_content();    
     $_content['rendered'] =$content;
@@ -40,7 +46,8 @@ function custom_fields_rest_prepare_post( $data, $post, $request) {
 
     
     $like_count = $wpdb->get_var("SELECT COUNT(1) FROM ".$wpdb->postmeta." where meta_value='like' and post_id=".$post_id);
-    $_data['like_count']= $like_count;    
+    $_data['like_count']= $like_count; 
+    $post_views = (int)get_post_meta($post_id, 'wl_pageviews', true);     
     $params = $request->get_params();
      if ( isset( $params['id'] ) ) {
 
@@ -51,7 +58,13 @@ function custom_fields_rest_prepare_post( $data, $post, $request) {
             $_avatarurl['avatarurl']  =$like->avatarurl;   
             $avatarurls[] = $_avatarurl;        
         }
-        $_data['avatarurls']= $avatarurls;
+
+      $post_views =$post_views+1;  
+      if(!update_post_meta($post_id, 'wl_pageviews', $post_views))   
+      {  
+        add_post_meta($post_id, 'wl_pageviews', 1, true);  
+      } 
+      $_data['avatarurls']= $avatarurls;
         
     }
     else 
@@ -60,6 +73,9 @@ function custom_fields_rest_prepare_post( $data, $post, $request) {
         unset($_data['author']); 
         unset($_data['excerpt']);
     }
+    $pageviews =$post_views ;   
+    $_data['pageviews'] = $pageviews;
+
     $category_id=$category[0]->term_id;
     $next_post = get_next_post($category_id, '', 'category');
     $previous_post = get_previous_post($category_id, '', 'category');
@@ -148,16 +164,16 @@ function post_swipe_json(){
                 $posts[] = $_data;               
             }
 
-            // $_data["post_title"] ="";
-            // $_data['post_thumbnail_image']="https://www.watch-life.net/images/weixinapp.jpg";
-            // $_data['content_first_image']="https://www.watch-life.net/images/weixinapp.jpg";
-            // $_data['post_medium_image_300']="https://www.watch-life.net/images/weixinapp.jpg";
-            // $_data['post_thumbnail_image_624']="https://www.watch-life.net/images/weixinapp.jpg"; 
-            // $_data['appid']="" ;        
-            // $_data['type']="apppage"; 
-            // $_data['url']="../applist/applist" ; 
-            // $_data['id']="-1" ;       
-            // $posts[] = $_data; 
+            $_data["post_title"] ="";
+            $_data['post_thumbnail_image']="https://www.watch-life.net/images/weixinapp.jpg";
+            $_data['content_first_image']="https://www.watch-life.net/images/weixinapp.jpg";
+            $_data['post_medium_image_300']="https://www.watch-life.net/images/weixinapp.jpg";
+            $_data['post_thumbnail_image_624']="https://www.watch-life.net/images/weixinapp.jpg"; 
+            $_data['appid']="" ;        
+            $_data['type']="apppage"; 
+            $_data['url']="../applist/applist" ; 
+            $_data['id']="-1" ;       
+            $posts[] = $_data; 
 
 
             $result["code"]="success";
