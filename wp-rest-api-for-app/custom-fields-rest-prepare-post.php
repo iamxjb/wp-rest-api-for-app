@@ -164,16 +164,16 @@ function post_swipe_json(){
                 $posts[] = $_data;               
             }
 
-            $_data["post_title"] ="";
-            $_data['post_thumbnail_image']="https://www.watch-life.net/images/weixinapp.jpg";
-            $_data['content_first_image']="https://www.watch-life.net/images/weixinapp.jpg";
-            $_data['post_medium_image_300']="https://www.watch-life.net/images/weixinapp.jpg";
-            $_data['post_thumbnail_image_624']="https://www.watch-life.net/images/weixinapp.jpg"; 
-            $_data['appid']="" ;        
-            $_data['type']="apppage"; 
-            $_data['url']="../applist/applist" ; 
-            $_data['id']="-1" ;       
-            $posts[] = $_data; 
+            // $_data["post_title"] ="";
+            // $_data['post_thumbnail_image']="https://www.watch-life.net/images/weixinapp.jpg";
+            // $_data['content_first_image']="https://www.watch-life.net/images/weixinapp.jpg";
+            // $_data['post_medium_image_300']="https://www.watch-life.net/images/weixinapp.jpg";
+            // $_data['post_thumbnail_image_624']="https://www.watch-life.net/images/weixinapp.jpg"; 
+            // $_data['appid']="" ;        
+            // $_data['type']="apppage"; 
+            // $_data['url']="../applist/applist" ; 
+            // $_data['id']="-1" ;       
+            // $posts[] = $_data; 
 
 
             $result["code"]="success";
