@@ -131,7 +131,9 @@ function getPostSwipe($request) {
 
 function post_swipe_json(){
         global $wpdb;
-        $postSwipeIDs = get_option('wf_swipe');
+        //$postSwipeIDs = get_option('wf_swipe');
+        //直接取置顶文章
+        $postSwipeIDs = join(",", get_option('sticky_posts'));
         $posts =array();                  
         if(!empty($postSwipeIDs))
         {
