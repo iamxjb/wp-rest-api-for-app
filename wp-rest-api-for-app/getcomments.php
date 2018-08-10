@@ -12,18 +12,23 @@ add_action( 'rest_api_init', function () {
 
 
 function getcomments($request) {
-	$postid =$request['postid'];
-	$limit= $request['limit'];
-	$page= $request['page'];
-	$order =$request['order'];
+	$postid =isset($request['postid'])?(int)$request['postid']:0;
+
+	$limit= isset($request['limit'])?(int)$request['limit']:0;
+	$page= isset($request['page'])?(int)$request['page']:0;
+	$order =isset($request['order'])?$request['page']:'';
 	if(empty($order ))
 	{
 		$order ="asc";
 	}
 
-	if(empty($postid) || empty($limit) || empty($page))
+	if(empty($postid) || empty($limit) || empty($page) || get_post($postid)==null)
 	{
-		return new WP_Error( 'error', ' postid or limit  or  page  is  empty', array( 'status' => 500 ) );
+		return new WP_Error( 'error', ' postid or limit  or  page  is  error', array( 'status' => 500 ) );
+	}
+
+	elseif (!is_numeric($limit) || !is_numeric($page) ||  !is_numeric($postid)) {
+		return new WP_Error( 'error', ' postid or limit  or  page  is  error', array( 'status' => 500 ) );		
 	}
 	else
 	{
@@ -44,7 +49,7 @@ function get_comments_json($postid,$limit,$page,$order)
 	$page=($page-1)*$limit;
 
 
-	$sql="SELECT t.*,(SELECT t2.meta_value  from ".$wpdb->commentmeta."  t2 where  t.comment_ID = t2.comment_id  AND t2.meta_key = 'formId')  AS formId FROM ".$wpdb->comments." t WHERE t.comment_post_ID =".$postid." and t.comment_parent=0 and t.comment_approved='1' order by t.comment_date ".$order." limit ".$page.",".$limit;
+	$sql=$wpdb->prepare("SELECT t.*,(SELECT t2.meta_value  from ".$wpdb->commentmeta."  t2 where  t.comment_ID = t2.comment_id  AND t2.meta_key = 'formId')  AS formId FROM ".$wpdb->comments." t WHERE t.comment_post_ID =%d and t.comment_parent=0 and t.comment_approved='1' order by t.comment_date ".$order." limit %d,%d",$postid,$page,$limit);
 	//$sql  ="SELECT t2.comment_author as parent_name,t2.comment_date  as parent_date ,t1.user_id as user_id,(SELECT t3.meta_value  from ".$wpdb->commentmeta."  t3 where  t1.comment_ID = t3.comment_id  AND t3.meta_key = 'formId')  AS formId  from  ".$wpdb->comments." t1 LEFT JOIN ".$wpdb->comments." t2 on t1.comment_parent=t2.comment_ID  WHERE t1.comment_ID=".$comment_id;
 	
 	$comments = $wpdb->get_results($sql); 
@@ -77,7 +82,9 @@ function getchaildcomment($postid,$comment_id,$limit,$order){
 	global $wpdb;
 	if($limit>0){
 		$commentslist  =array();
-		$sql="SELECT t.*,(SELECT t2.meta_value  from ".$wpdb->commentmeta."  t2 where  t.comment_ID = t2.comment_id  AND t2.meta_key = 'formId')  AS formId FROM ".$wpdb->comments." t WHERE t.comment_post_ID =".$postid. " and t.comment_parent=".$comment_id." and t.comment_approved='1' order by comment_date ".$order;
+		$sql=$wpdb->prepare("SELECT t.*,(SELECT t2.meta_value  from ".$wpdb->commentmeta."  t2 where  t.comment_ID = t2.comment_id  AND t2.meta_key = 'formId')  AS formId FROM ".$wpdb->comments." t WHERE t.comment_post_ID =%d and t.comment_parent=%d and t.comment_approved='1' order by comment_date %s",$postid,$comment_id,$order);
+
+
 		$comments = $wpdb->get_results($sql); 
 		foreach($comments as $comment){						
 				$data["id"]=$comment->comment_ID;

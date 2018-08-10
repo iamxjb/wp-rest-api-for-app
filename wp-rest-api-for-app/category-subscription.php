@@ -25,7 +25,8 @@ function postSubscription($request) {
         else
         {
             $user_id =0;
-            $sql ="SELECT ID FROM ".$wpdb->users ." WHERE user_login='".$openid."'";
+            $sql =$wpdb->prepare("SELECT ID FROM ".$wpdb->users ." WHERE user_login=%s",$openid);
+
             $users = $wpdb->get_results($sql);
             foreach ($users as $user) {
                 $user_id = (int) $user->ID;
@@ -54,7 +55,7 @@ function postSubscription($request) {
 function post_subscription_json($user_id,$categoryid) {     
     //$usermeta = get_user_meta($user_id, "wl_sub",true);
     global $wpdb;
-    $sql ="SELECT *  FROM ".$wpdb->usermeta ." WHERE user_id='".$user_id."' and meta_key='wl_sub' and meta_value='".$categoryid."'";
+    $sql =$wpdb->prepare("SELECT *  FROM ".$wpdb->usermeta ." WHERE user_id=%d and meta_key='wl_sub' and meta_value=%s",$user_id,$categoryid);
      //$count=0;
      $usermetas = $wpdb->get_results($sql);
      $count =count($usermetas);
@@ -139,7 +140,7 @@ function getSubscription($request) {
         else
         {
             $user_id =0;
-            $sql ="SELECT ID FROM ".$wpdb->users ." WHERE user_login='".$openid."'";
+            $sql =$wpdb->prepare("SELECT ID FROM ".$wpdb->users ." WHERE user_login=%s",$openid);
             $users = $wpdb->get_results($sql);
             foreach ($users as $user) {
                 $user_id = (int) $user->ID;

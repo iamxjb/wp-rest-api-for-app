@@ -44,14 +44,14 @@ function custom_fields_rest_prepare_post( $data, $post, $request) {
     $_data['content']= $_content; 
     */
 
-    
-    $like_count = $wpdb->get_var("SELECT COUNT(1) FROM ".$wpdb->postmeta." where meta_value='like' and post_id=".$post_id);
+    $sql =$wpdb->prepare("SELECT COUNT(1) FROM ".$wpdb->postmeta." where meta_value='like' and post_id=%d",$post_id);
+    $like_count = $wpdb->get_var($sql);
     $_data['like_count']= $like_count; 
     $post_views = (int)get_post_meta($post_id, 'wl_pageviews', true);     
     $params = $request->get_params();
      if ( isset( $params['id'] ) ) {
 
-        $sql="SELECT meta_key , (SELECT display_name from ".$wpdb->users." WHERE user_login=substring(meta_key,2)) as avatarurl FROM ".$wpdb->postmeta." where meta_value='like' and post_id=".$post_id;
+        $sql=$wpdb->prepare("SELECT meta_key , (SELECT display_name from ".$wpdb->users." WHERE user_login=substring(meta_key,2)) as avatarurl FROM ".$wpdb->postmeta." where meta_value='like' and post_id=%d",$post_id);
         $likes = $wpdb->get_results($sql);
         $avatarurls =array();
         foreach ($likes as $like) {
@@ -65,6 +65,37 @@ function custom_fields_rest_prepare_post( $data, $post, $request) {
         add_post_meta($post_id, 'wl_pageviews', 1, true);  
       } 
       $_data['avatarurls']= $avatarurls;
+
+
+      date_default_timezone_set('Asia/Shanghai');
+      $fristday= date("Y-m-d H:i:s", strtotime("-5 year")); 
+      $today = date("Y-m-d H:i:s"); //获取今天日期时间
+      $tags= $_data["tags"];
+        if(count($tags)>0)
+        {
+          $tags=implode(",",$tags);
+          $sql="
+          SELECT DISTINCT ID, post_title
+          FROM ".$wpdb->posts." , ".$wpdb->term_relationships.", ".$wpdb->term_taxonomy."
+          WHERE ".$wpdb->term_taxonomy.".term_taxonomy_id =  ".$wpdb->term_relationships.".term_taxonomy_id
+          AND ID = object_id
+          AND taxonomy = 'post_tag'
+          AND post_status = 'publish'
+          AND post_type = 'post'
+          AND term_id IN (" . $tags . ")
+          AND ID != '" . $post_id . "'
+          AND post_date BETWEEN '".$fristday."' AND '".$today."' 
+          ORDER BY  RAND()
+          LIMIT 5";
+          $related_posts = $wpdb->get_results($sql);
+
+          $_data['related_posts'] = $related_posts;
+
+        }
+        else{
+          $_data['related_posts']=null;
+        }
+        
         
     }
     else 
