@@ -72,8 +72,7 @@ function get_comments_json($postid,$limit,$page,$order)
 	$result["code"]="success";
     $result["message"]= "get  comments success";
     $result["status"]="200";
-    $result["data"]=$commentslist;
-    //$result["sql"]= $sql;                 
+    $result["data"]=$commentslist;               
     return $result;         
 
 }
@@ -82,7 +81,7 @@ function getchaildcomment($postid,$comment_id,$limit,$order){
 	global $wpdb;
 	if($limit>0){
 		$commentslist  =array();
-		$sql=$wpdb->prepare("SELECT t.*,(SELECT t2.meta_value  from ".$wpdb->commentmeta."  t2 where  t.comment_ID = t2.comment_id  AND t2.meta_key = 'formId')  AS formId FROM ".$wpdb->comments." t WHERE t.comment_post_ID =%d and t.comment_parent=%d and t.comment_approved='1' order by comment_date %s",$postid,$comment_id,$order);
+		$sql=$wpdb->prepare("SELECT t.*,(SELECT t2.meta_value  from ".$wpdb->commentmeta."  t2 where  t.comment_ID = t2.comment_id  AND t2.meta_key = 'formId')  AS formId FROM ".$wpdb->comments." t WHERE t.comment_post_ID =%d and t.comment_parent=%d and t.comment_approved='1' order by comment_date ".$order,$postid,$comment_id);
 
 
 		$comments = $wpdb->get_results($sql); 
@@ -96,7 +95,6 @@ function getchaildcomment($postid,$comment_id,$limit,$order){
 				$data["formId"]=$comment->formId;
 				$data["userid"]=$comment->user_id;
 				$data["child"]=getchaildcomment($postid,$comment->comment_ID,$limit-1,$order);
-				//$data["sql"]=$sql;
 				$commentslist[] =$data;			
 		}
 	}
