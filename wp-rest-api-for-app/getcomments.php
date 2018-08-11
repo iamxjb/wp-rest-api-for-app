@@ -16,7 +16,7 @@ function getcomments($request) {
 
 	$limit= isset($request['limit'])?(int)$request['limit']:0;
 	$page= isset($request['page'])?(int)$request['page']:0;
-	$order =isset($request['order'])?$request['page']:'';
+	$order =isset($request['order'])?$request['order']:'';
 	if(empty($order ))
 	{
 		$order ="asc";
