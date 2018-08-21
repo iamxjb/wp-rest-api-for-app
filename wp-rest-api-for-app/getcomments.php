@@ -78,7 +78,7 @@ function get_comments_json($postid,$limit,$page,$order)
 
 }
 
-function getchaildcomment($postid,$comment_id,$limit,$order){
+function getchildcomment($postid,$comment_id,$limit,$order){
 	global $wpdb;
 	if($limit>0){
 		$commentslist  =array();
@@ -95,7 +95,7 @@ function getchaildcomment($postid,$comment_id,$limit,$order){
 				$data["content"]=$comment->comment_content;
 				$data["formId"]=$comment->formId;
 				$data["userid"]=$comment->user_id;
-				$data["child"]=getchaildcomment($postid,$comment->comment_ID,$limit-1,$order);
+				$data["child"]=getchildcomment($postid,$comment->comment_ID,$limit-1,$order);
 				//$data["sql"]=$sql;
 				$commentslist[] =$data;			
 		}
