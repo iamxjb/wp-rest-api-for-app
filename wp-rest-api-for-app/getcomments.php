@@ -65,7 +65,7 @@ function get_comments_json($postid,$limit,$page,$order)
 			$data["formId"]=$comment->formId;
 			$data["userid"]=$comment->user_id;
 			$order="asc";
-			$data["child"]=getchaildcomment($postid,$comment->comment_ID,5,$order);
+			$data["child"]=getchildcomment($postid,$comment->comment_ID,5,$order);
 			$commentslist[] =$data;
 		}
 	}
