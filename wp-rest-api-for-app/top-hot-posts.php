@@ -56,6 +56,13 @@ function get_mostcommented_thisyear_json($limit = 10) {
             $_data['content_first_image']=$images['content_first_image'];
             $_data['post_medium_image_300']=$images['post_medium_image_300'];
             $_data['post_thumbnail_image_624']=$images['post_thumbnail_image_624'];
+
+            $_data['post_frist_image']=$images['post_frist_image'];
+              $_data['post_medium_image']=$images['post_medium_image'];
+              $_data['post_large_image']=$images['post_large_image'];
+              $_data['post_full_image']=$images['post_full_image'];
+              $_data['post_all_images']=$images['post_all_images'];
+
             $posts[] = $_data;
             
             
@@ -117,7 +124,12 @@ function get_mostcommented_json($limit = 10) {
             $_data['post_thumbnail_image']=$images['post_thumbnail_image'];
             $_data['content_first_image']=$images['content_first_image'];
             $_data['post_medium_image_300']=$images['post_medium_image_300'];
-            $_data['post_thumbnail_image_624']=$images['post_thumbnail_image_624'];          
+            $_data['post_thumbnail_image_624']=$images['post_thumbnail_image_624']; 
+            $_data['post_frist_image']=$images['post_frist_image'];
+            $_data['post_medium_image']=$images['post_medium_image'];
+              $_data['post_large_image']=$images['post_large_image'];
+              $_data['post_full_image']=$images['post_full_image'];
+              $_data['post_all_images']=$images['post_all_images'];         
                         
             $posts[] = $_data;    
             
@@ -186,6 +198,11 @@ function get_mostlike_thisyear_json($limit = 10) {
             $_data['content_first_image']=$images['content_first_image'];
             $_data['post_medium_image_300']=$images['post_medium_image_300'];
             $_data['post_thumbnail_image_624']=$images['post_thumbnail_image_624'];
+            $_data['post_frist_image']=$images['post_frist_image'];
+            $_data['post_medium_image']=$images['post_medium_image'];
+              $_data['post_large_image']=$images['post_large_image'];
+              $_data['post_full_image']=$images['post_full_image'];
+              $_data['post_all_images']=$images['post_all_images'];
             $posts[] = $_data;
             
             
@@ -254,6 +271,11 @@ function get_pageviews_thisyear_json($limit = 10) {
             $_data['content_first_image']=$images['content_first_image'];
             $_data['post_medium_image_300']=$images['post_medium_image_300'];
             $_data['post_thumbnail_image_624']=$images['post_thumbnail_image_624'];
+            $_data['post_frist_image']=$images['post_frist_image'];
+            $_data['post_medium_image']=$images['post_medium_image'];
+              $_data['post_large_image']=$images['post_large_image'];
+              $_data['post_full_image']=$images['post_full_image'];
+              $_data['post_all_images']=$images['post_all_images'];
             $posts[] = $_data;
             
             
@@ -328,6 +350,11 @@ function get_praise_thisyear_json($limit = 10) {
             $_data['content_first_image']=$images['content_first_image'];
             $_data['post_medium_image_300']=$images['post_medium_image_300'];
             $_data['post_thumbnail_image_624']=$images['post_thumbnail_image_624'];
+            $_data['post_frist_image']=$images['post_frist_image'];
+            $_data['post_medium_image']=$images['post_medium_image'];
+              $_data['post_large_image']=$images['post_large_image'];
+              $_data['post_full_image']=$images['post_full_image'];
+              $_data['post_all_images']=$images['post_all_images'];
             $posts[] = $_data;
             
             
