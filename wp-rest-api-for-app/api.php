@@ -28,76 +28,154 @@ function get_post_image_url($image_id, $size='full'){
 	return false;	
 }
 
-function getPostImages($post_content,$post_id){
-    $content_first_image= get_post_content_first_image($post_content);
+function getPostImages($content,$postId){
+    $content_first_image= get_post_content_first_image($content);
+    $post_frist_image=$content_first_image;
+
     if(empty($content_first_image))
     {
         $content_first_image='';
     }
 
+    if(empty($post_frist_image))
+    {
+        $post_frist_image='';
+    }
+
     $post_thumbnail_image_150='';
     $post_medium_image_300='';
     $post_thumbnail_image_624=''; 
-    $post_thumbnail_image='';           
-    $_data =array();
-    $thumbnail_id = get_post_thumbnail_id($post_id);
-    if($thumbnail_id ){
-        $thumb = wp_get_attachment_image_src($thumbnail_id, 'thumbnail');
-        $post_thumbnail_image = $thumb[0];
-    }
-    else if($content_first_image)
-    {          
-        $attachments = get_attached_media( 'image', $post_id ); //查找文章的附件
-        $index = array_keys($attachments);
-        $flag=0; 
-        
-        for ($i = 0; $i < sizeof($index); $i++) {
-            $arr =$attachments[$index[$i]];
-            $imageName = $arr->{"post_title"};            
-            if(strpos($content_first_image,$imageName)!==false){  //附件的名称如果和第一张图片相同,就取这个附件的缩略图
-                {
-                    $post_thumbnail_image_150 = wp_get_attachment_image_url($arr->{"ID"},'thumbnail');
-                    $post_medium_image_300=wp_get_attachment_image_url($arr->{"ID"},'medium');
-                    $post_thumbnail_image_624=wp_get_attachment_image_url($arr->{"ID"},'post-thumbnail');
-                    $id =$arr->{"ID"};                    
-                    $flag++;
-                    break;
-                }
-            }
-        }
-        if($flag>0)
-        {
-            $post_thumbnail_image = $post_thumbnail_image_150;
-        }
-        else
-        {
-            $post_thumbnail_image = $content_first_image; 
-        }          
-    }
-    else
-    {
-        $post_thumbnail_image='';
-    }   
 
-    if(strlen($post_medium_image_300)>0)
-    {
-        $_data['post_medium_image_300']=$post_medium_image_300; 
+    $post_thumbnail_image='';
+
+    $post_medium_image="";
+    $post_large_image="";
+    $post_full_image="";   
+
+    $_data =array();
+
+    if (has_post_thumbnail()) {
+        //获取缩略的ID
+        $thumbnailId = get_post_thumbnail_id($postId);
+
+        //特色图缩略图
+        $image=wp_get_attachment_image_src($thumbnailId, 'thumbnail');
+        $post_thumbnail_image=$image[0];
+        $post_thumbnail_image_150=$image[0];
+        //特色中等图
+        $image=wp_get_attachment_image_src($thumbnailId, 'medium');
+        $post_medium_image=$image[0];
+        $post_medium_image_300=$image[0];
+        //特色大图
+        $image=wp_get_attachment_image_src($thumbnailId, 'large');
+        $post_large_image=$image[0];
+        $post_thumbnail_image_624=$image[0];
+        //特色原图
+        $image=wp_get_attachment_image_src($thumbnailId, 'full');
+        $post_full_image=$image[0];
+
     }
-    else
-    {
-       $_data['post_medium_image_300']=$content_first_image;
-   }  
-   if(strlen($post_thumbnail_image_624)>0)
-   {
-    $_data['post_thumbnail_image_624']=$post_thumbnail_image_624; 
-}
-else
-{
-   $_data['post_thumbnail_image_624']=$content_first_image;
-}            
-$_data['post_thumbnail_image']=$post_thumbnail_image;
-$_data['content_first_image']=$content_first_image; 
-return  $_data;             
+
+    if(!empty($content_first_image) && empty($post_thumbnail_image))
+     {
+        $post_thumbnail_image=$content_first_image;
+        $post_thumbnail_image_150=$content_first_image;
+     }
+
+     if(!empty($content_first_image) && empty($post_medium_image))
+     {
+        $post_medium_image=$content_first_image;
+        $post_medium_image_300=$content_first_image;
+        
+     }
+
+     if(!empty($content_first_image) && empty($post_large_image))
+     {
+        $post_large_image=$content_first_image;
+        $post_thumbnail_image_624=$content_first_image;
+     }
+
+     if(!empty($content_first_image) && empty($post_full_image))
+     {
+        $post_full_image=$content_first_image;
+     }
+
+     $post_all_images = get_attached_media( 'image', $postId);
+
+     $_data['post_frist_image']=$post_frist_image;
+     $_data['post_thumbnail_image']=$post_thumbnail_image;
+     $_data['post_medium_image']=$post_medium_image;
+     $_data['post_large_image']=$post_large_image;
+     $_data['post_full_image']=$post_full_image;
+     $_data['post_all_images']=$post_all_images;
+
+     $_data['post_thumbnail_image_150']=$post_thumbnail_image_150;
+     $_data['post_medium_image_300']=$post_medium_image_300;
+     $_data['post_thumbnail_image_624']=$post_thumbnail_image_624;
+    
+    
+    $_data['content_first_image']=$content_first_image; 
+
+
+    return  $_data; 
+    
+
+   //  if($thumbnail_id ){
+   //      $thumb = wp_get_attachment_image_src($thumbnail_id, 'thumbnail');
+   //      $post_thumbnail_image = $thumb[0];
+   //  }
+   //  else if($content_first_image)
+   //  {          
+   //      $attachments = get_attached_media( 'image', $post_id ); //查找文章的附件
+   //      $index = array_keys($attachments);
+   //      $flag=0; 
+        
+   //      for ($i = 0; $i < sizeof($index); $i++) {
+   //          $arr =$attachments[$index[$i]];
+   //          $imageName = $arr->{"post_title"};            
+   //          if(strpos($content_first_image,$imageName)!==false){  //附件的名称如果和第一张图片相同,就取这个附件的缩略图
+   //              {
+   //                  $post_thumbnail_image_150 = wp_get_attachment_image_url($arr->{"ID"},'thumbnail');
+   //                  $post_medium_image_300=wp_get_attachment_image_url($arr->{"ID"},'medium');
+   //                  $post_thumbnail_image_624=wp_get_attachment_image_url($arr->{"ID"},'post-thumbnail');
+   //                  $id =$arr->{"ID"};                    
+   //                  $flag++;
+   //                  break;
+   //              }
+   //          }
+   //      }
+   //      if($flag>0)
+   //      {
+   //          $post_thumbnail_image = $post_thumbnail_image_150;
+   //      }
+   //      else
+   //      {
+   //          $post_thumbnail_image = $content_first_image; 
+   //      }          
+   //  }
+   //  else
+   //  {
+   //      $post_thumbnail_image='';
+   //  }   
+
+   //  if(strlen($post_medium_image_300)>0)
+   //  {
+   //      $_data['post_medium_image_300']=$post_medium_image_300; 
+   //  }
+   //  else
+   //  {
+   //     $_data['post_medium_image_300']=$content_first_image;
+   // }  
+   // if(strlen($post_thumbnail_image_624)>0)
+   // {
+   //  $_data['post_thumbnail_image_624']=$post_thumbnail_image_624; 
+   //  }
+   //  else
+   //  {
+   //     $_data['post_thumbnail_image_624']=$content_first_image;
+   //  }
+   //  
+               
 
 }
 
