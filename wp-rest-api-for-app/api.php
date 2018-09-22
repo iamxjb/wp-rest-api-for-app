@@ -54,7 +54,7 @@ function getPostImages($content,$postId){
 
     $_data =array();
 
-    if (has_post_thumbnail()) {
+    if (has_post_thumbnail($postId)) {
         //获取缩略的ID
         $thumbnailId = get_post_thumbnail_id($postId);
 
