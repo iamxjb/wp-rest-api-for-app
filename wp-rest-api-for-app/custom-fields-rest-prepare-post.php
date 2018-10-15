@@ -109,7 +109,7 @@ function custom_fields_rest_prepare_post( $data, $post, $request) {
     {
         unset($_data['content'] );   
         unset($_data['author']); 
-        unset($_data['excerpt']);
+        //unset($_data['excerpt']);
     }
     $pageviews =$post_views ;   
     $_data['pageviews'] = $pageviews;
