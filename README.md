@@ -1,3 +1,9 @@
+# 新版本 WordpPress rest api  插件已发布，此版本将不在更新，新版本请访问：https://github.com/iamxjb/rest-api-to-miniprogram
+
+
+
+
+
 # WordpPress rest api 定制化插件
 
 # 为微信小程序、app提供定制WordPress rest api
